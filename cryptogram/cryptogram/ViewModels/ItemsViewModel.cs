@@ -7,6 +7,7 @@ using Xamarin.Forms;
 
 using cryptogram.Models;
 using cryptogram.Views;
+using cryptogram.Resources;
 
 namespace cryptogram.ViewModels
 {
@@ -17,7 +18,7 @@ namespace cryptogram.ViewModels
 
         public ItemsViewModel()
         {
-            Title = "Browse";
+            Title = Dictionary.Contacts;
             Items = new ObservableCollection<Item>();
             LoadItemsCommand = new Command(async () => await ExecuteLoadItemsCommand());
 

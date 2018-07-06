@@ -1,17 +1,18 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms" 
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+             xmlns:local="using:cryptogram.Resources"
              x:Class="cryptogram.Views.NewItemPage"
-		     Title="New Item">
+		     Title="{x:Static local:Dictionary.NewContact}">
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Save" Clicked="Save_Clicked" />
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <StackLayout Spacing="20" Padding="15">
-            <Label Text="Text" FontSize="Medium" />
+            <Label Text="{x:Static local:Dictionary.ContactName}" FontSize="Medium" />
             <Entry Text="{Binding Item.Text}" FontSize="Small" />
-            <Label Text="Description" FontSize="Medium" />
-            <Editor Text="{Binding Item.Description}" FontSize="Small" Margin="0" />
+            <Label Text="{x:Static local:Dictionary.PublicKey}" FontSize="Medium" />
+            <Entry Text="{Binding Item.Description}" FontSize="Small" />
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>
