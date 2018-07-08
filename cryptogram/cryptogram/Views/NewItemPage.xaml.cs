@@ -19,10 +19,9 @@ namespace cryptogram.Views
 
             Item = new Item
             {
-                Text = "Item name",
-                Description = "This is an item description."
+                ContactName = "Item name",
+                PublicKey = "This is an item description."
             };
-
             BindingContext = this;
         }
 

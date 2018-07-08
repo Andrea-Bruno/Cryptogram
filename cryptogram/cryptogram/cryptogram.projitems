@@ -20,6 +20,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Blockchain\Setup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Blockchain\Test.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Blockchain\Utility.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\Messaging.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Item.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Blockchain\Blockchain.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Resources\Dictionary.cs" />

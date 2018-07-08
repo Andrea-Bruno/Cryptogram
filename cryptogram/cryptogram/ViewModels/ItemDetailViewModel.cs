@@ -4,13 +4,14 @@ using cryptogram.Models;
 
 namespace cryptogram.ViewModels
 {
-    public class ItemDetailViewModel : BaseViewModel
+  public class ItemDetailViewModel : BaseViewModel
+  {
+    public Item Item { get; set; }
+    public ItemDetailViewModel(Item item = null)
     {
-        public Item Item { get; set; }
-        public ItemDetailViewModel(Item item = null)
-        {
-            Title = item?.Text;
-            Item = item;
-        }
+      Core.Messaging.RecipientPublicKeyBase64 = item.PublicKey; 
+      Title = item?.ContactName;
+      Item = item;
     }
+  }
 }

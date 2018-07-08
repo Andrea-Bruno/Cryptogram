@@ -16,7 +16,6 @@ namespace cryptogram.Views
         public ItemDetailPage(ItemDetailViewModel viewModel)
         {
             InitializeComponent();
-
             BindingContext = this.viewModel = viewModel;
         }
 
@@ -26,12 +25,25 @@ namespace cryptogram.Views
 
             var item = new Item
             {
-                Text = "Item 1",
-                Description = "This is an item description."
+                ContactName = "Item 1",
+                PublicKey = "This is an item description."
             };
 
             viewModel = new ItemDetailViewModel(item);
             BindingContext = viewModel;
         }
+
+    private void Send_Clicked(object sender, EventArgs e)
+    {
+
+      Core.Messaging.SendMessage(GetTextMessage().Text);
+ 
     }
+
+    private Editor GetTextMessage()
+    {
+      return this.FindByName<Editor>("TextMessage");
+    }
+
+  }
 }

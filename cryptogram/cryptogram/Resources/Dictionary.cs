@@ -17,6 +17,11 @@ namespace cryptogram.Resources
           NewContact = "Nuovo contatto";
           Contacts = "Contatti";
           About = "Info";
+          Send = "Invia";
+          Save = "Salva";
+          Alert = "Avviso";
+          Ok = "Ok";
+          InvalidPublikKey = "Chiave pubblica non valida!";
           break;
         default:
           ContactName = "Contact name";
@@ -24,6 +29,11 @@ namespace cryptogram.Resources
           NewContact = "New contact";
           Contacts = "Contacts";
           About = "About";
+          Send = "Send";
+          Save = "Save";
+          Alert = "Alert";
+          Ok = "Ok";
+          InvalidPublikKey = "Public key not valid!";
           break;
       }
     }
@@ -32,5 +42,10 @@ namespace cryptogram.Resources
     public static string NewContact;
     public static string Contacts;
     public static string About;
+    public static string Send; //Send message
+    public static string Save;
+    public static string Alert;
+    public static string Ok;
+    public static string InvalidPublikKey;
   }
 }

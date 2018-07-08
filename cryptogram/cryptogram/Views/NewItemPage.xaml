@@ -5,7 +5,7 @@
              x:Class="cryptogram.Views.NewItemPage"
 		     Title="{x:Static local:Dictionary.NewContact}">
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Save" Clicked="Save_Clicked" />
+        <ToolbarItem Text="{x:Static local:Dictionary.Save}" Clicked="Save_Clicked" />
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <StackLayout Spacing="20" Padding="15">
