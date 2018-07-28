@@ -296,7 +296,7 @@ namespace BlockchainManager
             using (System.IO.StreamWriter sw = System.IO.File.AppendText(Blockchain.PathNameFile()))
             {
               sw.WriteLine(Record, Blockchain.BlockSeparator);
-            }
+          }
             return true;
           }
           catch (Exception ex)

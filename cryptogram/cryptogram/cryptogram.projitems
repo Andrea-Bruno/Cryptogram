@@ -18,8 +18,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Blockchain\Converter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Blockchain\Network.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Blockchain\Setup.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Blockchain\Test.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Blockchain\EXAMPLES.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Blockchain\Utility.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\Cryptography.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Messaging.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Item.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Blockchain\Blockchain.cs" />
