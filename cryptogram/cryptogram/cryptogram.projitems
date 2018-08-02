@@ -21,6 +21,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Blockchain\EXAMPLES.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Blockchain\Utility.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Cryptography.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\Functions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Messaging.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Item.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Blockchain\Blockchain.cs" />

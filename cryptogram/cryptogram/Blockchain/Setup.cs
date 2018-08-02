@@ -23,9 +23,7 @@ namespace BlockchainManager
     }
     public static class Ambient
     {
-      public static string Repository = "/blockchains";
-
-
+      public static string Repository =  "blockchains";
     }
   }
 

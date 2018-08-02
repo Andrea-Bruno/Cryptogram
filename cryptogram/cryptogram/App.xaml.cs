@@ -41,7 +41,7 @@ namespace cryptogram
       // Handle when your app resumes
       Application.Current.Properties.TryGetValue("keys",out object GetKey);
       byte[] Keys = (byte[])GetKey;
-      cryptogram.Core.Messaging.SetRSA(Keys);
     }
+
   }
 }

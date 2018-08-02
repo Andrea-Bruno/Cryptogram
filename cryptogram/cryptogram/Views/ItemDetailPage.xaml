@@ -5,6 +5,7 @@
              x:Class="cryptogram.Views.ItemDetailPage"
              Title="{Binding Title}">
     <StackLayout Spacing="20" Padding="15">
+        <StackLayout x:Name="MessageList"></StackLayout>
         <Label Text="{x:Static local:Dictionary.ContactName}" FontSize="Medium" />
         <Entry x:Name="ContactName" Text="{Binding Item.ContactName}" FontSize="Small"/>
         <Label Text="{x:Static local:Dictionary.PublicKey}" FontSize="Medium" />

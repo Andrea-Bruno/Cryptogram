@@ -9,7 +9,7 @@ namespace cryptogram.Core
     public static byte[] Encrypt(byte[] Data, byte[] Password)
     {
       var symmetricKey = new RijndaelManaged() { Mode = CipherMode.CBC, Padding = PaddingMode.Zeros };
-      var encryptor = symmetricKey.CreateEncryptor(Password, Encoding.ASCII.GetBytes("VIKey"));
+      var encryptor = symmetricKey.CreateEncryptor(Password, Password );
 
       byte[] EncryptedData;
 
@@ -30,7 +30,7 @@ namespace cryptogram.Core
     public static byte[] Decrypt( byte[] EncryptedData, byte[] Password)
     {
       var symmetricKey = new RijndaelManaged() { Mode = CipherMode.CBC, Padding = PaddingMode.None };
-      var decryptor = symmetricKey.CreateDecryptor(Password, Encoding.ASCII.GetBytes("VIKey"));
+      var decryptor = symmetricKey.CreateDecryptor(Password, Password);
       var memoryStream = new System.IO.MemoryStream(EncryptedData);
       var cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read);
       byte[] Data = new byte[EncryptedData.Length];
@@ -41,14 +41,13 @@ namespace cryptogram.Core
       return Data;
     }
 
+    //public static byte[] EncryptText(string Text, byte[] Password)
+    //{ return Encrypt(Encoding.UTF8.GetBytes(Text), Password); }
 
-    public static byte[] EncryptText(string Text, byte[] Password)
-    { return Encrypt(Encoding.UTF8.GetBytes(Text), Password); }
-
-    public static string DecryptText(byte[] EncryptedText, byte[] Password)
-    {
-      return Encoding.UTF8.GetString(Decrypt(EncryptedText, Password));
-    }
+    //public static string DecryptText(byte[] EncryptedText, byte[] Password)
+    //{
+    //  return Encoding.UTF8.GetString(Decrypt(EncryptedText, Password)).TrimEnd('\0');
+    //}
 
 
   }

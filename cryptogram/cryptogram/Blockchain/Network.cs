@@ -66,7 +66,7 @@ namespace BlockchainManager
         if (Dictionary == null)
           Dictionary = new System.Collections.Specialized.NameValueCollection();
 
-        string StrCod = Converter.StringToBase64(postData, false);
+        string StrCod = Converter.StringToBase64(postData);
         Dictionary.Add("object", StrCod);
       }
 
