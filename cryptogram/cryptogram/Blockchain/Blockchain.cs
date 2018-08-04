@@ -97,7 +97,10 @@ namespace BlockchainManager
       public long RequestSendBlocksFromPosition = -1;
       public Block[] Blocks = new Block[0];
     }
-    public void SyncNode()
+    /// <summary>
+    /// Synchronize the local blockchain, with the nodes remotely
+    /// </summary>
+    public void SyncNodes()
     {
       foreach (var Node in Setup.Network.NodeList)
       {
@@ -522,9 +525,13 @@ namespace BlockchainManager
     {
       return GetPreviousBlock(-1);
     }
+    /// <summary>
+    /// Returns the block preceding the position on file Position, the parameter Position is base 0
+    /// </summary>
+    /// <param name="Position">File position base 0, if Position is -1 then return the last block in blockchain</param>
+    /// <returns></returns>
     public Block GetPreviousBlock(long Position)
     {
-      // Position -1 return last block
       Block Output = null;
       string File = PathNameFile();
       if (System.IO.File.Exists(File))
@@ -541,7 +548,14 @@ namespace BlockchainManager
           if (StartRead < 0)
             StartRead = 0;
           Stream.BaseStream.Position = StartRead;
-          Data = Stream.ReadToEnd();
+
+          int Len = (int)(Position - StartRead);
+          var Buffer = new char[Len];
+          Len = Stream.Read(Buffer, 0, Len);
+          Data = new string(Buffer);
+
+
+          //Data = Stream.ReadToEnd();
         }
         catch (Exception ex)
         {

@@ -23,6 +23,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Core\Cryptography.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Functions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Messaging.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\Settings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Item.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Blockchain\Blockchain.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Resources\Dictionary.cs" />

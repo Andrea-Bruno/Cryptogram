@@ -4,51 +4,30 @@ using System.Text;
 
 namespace cryptogram.Core
 {
-  static class  Cryptography
-    {
+  static class Cryptography
+  {
     public static byte[] Encrypt(byte[] Data, byte[] Password)
     {
-      var symmetricKey = new RijndaelManaged() { Mode = CipherMode.CBC, Padding = PaddingMode.Zeros };
-      var encryptor = symmetricKey.CreateEncryptor(Password, Password );
-
-      byte[] EncryptedData;
-
-      using (var memoryStream = new System.IO.MemoryStream())
+      System.Security.Cryptography.HashAlgorithm hashType = new System.Security.Cryptography.SHA256Managed();
+      byte[] Hash = hashType.ComputeHash(Password);
+      var Result = new byte[Data.Length];
+      int p = 0;
+      for (int i = 0; i < Data.Length - 1; i++)
       {
-        using (var CryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write))
+        Result[i] = (byte)(Data[i] ^ Hash[p]);
+        p += 1;
+        if (p == Hash.Length)
         {
-          CryptoStream.Write(Data, 0, Data.Length);
-          CryptoStream.FlushFinalBlock();
-          EncryptedData = memoryStream.ToArray();
-          CryptoStream.Close();
+          p = 0;
+          Hash = hashType.ComputeHash(Hash);
         }
-        memoryStream.Close();
       }
-      return EncryptedData;
+      return Result;
     }
 
-    public static byte[] Decrypt( byte[] EncryptedData, byte[] Password)
+    public static byte[] Decrypt(byte[] EncryptedData, byte[] Password)
     {
-      var symmetricKey = new RijndaelManaged() { Mode = CipherMode.CBC, Padding = PaddingMode.None };
-      var decryptor = symmetricKey.CreateDecryptor(Password, Password);
-      var memoryStream = new System.IO.MemoryStream(EncryptedData);
-      var cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read);
-      byte[] Data = new byte[EncryptedData.Length];
-
-      int decryptedByteCount = cryptoStream.Read(Data, 0, Data.Length);
-      memoryStream.Close();
-      cryptoStream.Close();
-      return Data;
-    }
-
-    //public static byte[] EncryptText(string Text, byte[] Password)
-    //{ return Encrypt(Encoding.UTF8.GetBytes(Text), Password); }
-
-    //public static string DecryptText(byte[] EncryptedText, byte[] Password)
-    //{
-    //  return Encoding.UTF8.GetString(Decrypt(EncryptedText, Password)).TrimEnd('\0');
-    //}
-
-
+      return Encrypt(EncryptedData, Password);
+    }    
   }
 }

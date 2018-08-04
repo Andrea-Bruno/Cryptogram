@@ -34,46 +34,58 @@ namespace cryptogram.Core
 
     private static void ReadBlockchain()
     {
-      var Block = Blockchain.GetLastBlock();
-      if (Block != null && Block.IsValid())
+      var Blocks = Blockchain.GetBlocks(0);
+      var Container = cryptogram.Views.ItemDetailPage.Messages;
+      foreach (var Block in Blocks)
       {
-        var DateAndTime = Block.Timestamp;
-        var Data = Block.DataByteArray;
-        byte Version = Data[0];
-        DataType Type = (DataType)Data[1];
-        var Password = DecryptPassword(Data, out int EncryptedDataPosition);
-        var Len = Data.Length - EncryptedDataPosition;
-        var EncryptedData = new byte[Len];
-        Buffer.BlockCopy(Data, EncryptedDataPosition, EncryptedData, 0, Len);
-        var DataElement = Cryptography.Decrypt(EncryptedData, Password);
-        var Signatures = Block.GetAllBodySignature();
-        var Author = Participants.Find(x => Signatures.ContainsKey(x));
-        if (Author == null)
-          System.Diagnostics.Debug.WriteLine("Block written by an impostor");
-        else
+        if (Block != null && Block.IsValid())
         {
-          var IsMy = Author == Functions.GetMyPublicKey();
-          var Container = cryptogram.Views.ItemDetailPage.Messages;
-          var PaddingLeft = 5; var PaddingRight = 5;
-          if (IsMy)
-            PaddingLeft = 20;
+          var DateAndTime = Block.Timestamp;
+          var Data = Block.DataByteArray;
+          byte Version = Data[0];
+          DataType Type = (DataType)Data[1];
+          var Password = DecryptPassword(Data, out int EncryptedDataPosition);
+          var Len = Data.Length - EncryptedDataPosition;
+          var EncryptedData = new byte[Len];
+          Buffer.BlockCopy(Data, EncryptedDataPosition, EncryptedData, 0, Len);
+          var DataElement = Cryptography.Decrypt(EncryptedData, Password);
+          var Signatures = Block.GetAllBodySignature();
+          var Author = Participants.Find(x => Signatures.ContainsKey(x));
+          if (Author == null)
+            System.Diagnostics.Debug.WriteLine("Block written by an impostor");
           else
-            PaddingRight = 20;
-          var Box = new Xamarin.Forms.StackLayout() { Padding = new Xamarin.Forms.Thickness(PaddingLeft, 5, PaddingRight, 5) };
-          Container.Children.Add(Box);
-          switch (Type)
           {
-            case DataType.Text:
-              var Label = new Xamarin.Forms.Label();
-              Label.Text = Encoding.Unicode.GetString(DataElement);
-              Box.Children.Add(Label);
-              break;
-            case DataType.Image:
-              break;
-            case DataType.Audio:
-              break;
-            default:
-              break;
+            var IsMy = Author == Functions.GetMyPublicKey();
+            var PaddingLeft = 5; var PaddingRight = 5;
+            Xamarin.Forms.Color Background;
+            if (IsMy)
+            {
+              PaddingLeft = 20;
+              Background = Settings.Graphics.BackgroundMyMessage;
+            }
+            else
+            {
+              Background = Settings.Graphics.BackgroundMessage;
+              PaddingRight = 20;
+            }
+            var Frame = new Xamarin.Forms.Frame() { CornerRadius = 10, BackgroundColor = Background, Padding = 0 };
+            var Box = new Xamarin.Forms.StackLayout() { Padding = new Xamarin.Forms.Thickness(PaddingLeft, 5, PaddingRight, 5) };
+            Frame.Content = Box;
+            Container.Children.Add(Frame);
+            switch (Type)
+            {
+              case DataType.Text:
+                var Label = new Xamarin.Forms.Label();
+                Label.Text = Encoding.Unicode.GetString(DataElement);
+                Box.Children.Add(Label);
+                break;
+              case DataType.Image:
+                break;
+              case DataType.Audio:
+                break;
+              default:
+                break;
+            }
           }
         }
       }
@@ -84,7 +96,7 @@ namespace cryptogram.Core
       return Guid.NewGuid().ToByteArray();
     }
 
-    private static byte[] pw;
+    //private static byte[] pw;
     private static byte[] EncryptPasswordForParticipants(byte[] Password)
     {
       //========================RESULT================================
@@ -98,13 +110,11 @@ namespace cryptogram.Core
         var EncryptedPassword = RSA.Encrypt(Password, true);
 
         //test
-        if (PublicKey == Functions.GetMyPublicKey())
-        {
-          pw = EncryptedPassword;
-          var PW = Functions.GetMyRSA().Decrypt(EncryptedPassword, true);
-        }
-
-
+        //if (PublicKey == Functions.GetMyPublicKey())
+        //{
+        //  pw = EncryptedPassword;
+        //  var PW = Functions.GetMyRSA().Decrypt(EncryptedPassword, true);
+        //}
 
         byte LanPass = (byte)EncryptedPassword.Length;
         byte[] Len = new byte[] { LanPass };
@@ -139,14 +149,14 @@ namespace cryptogram.Core
       }
       var EPassword = EncryptedPasswords[MyId];
       var RSA = Functions.GetMyRSA();
-      var x = RSA.Decrypt(pw, true);
-      for (int i = 0; i < pw.Length - 1; i++)
-      {
-        if (pw[i] != EPassword[i])
-        {
-          int fail = 1;
-        }
-      }
+      //var x = RSA.Decrypt(pw, true);
+      //for (int i = 0; i < pw.Length - 1; i++)
+      //{
+      //  if (pw[i] != EPassword[i])
+      //  {
+      //    int fail = 1;
+      //  }
+      //}
 
       return RSA.Decrypt(EPassword, true);
     }
