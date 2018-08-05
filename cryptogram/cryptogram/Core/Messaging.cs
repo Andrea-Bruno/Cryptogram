@@ -35,7 +35,6 @@ namespace cryptogram.Core
     private static void ReadBlockchain()
     {
       var Blocks = Blockchain.GetBlocks(0);
-      var Container = cryptogram.Views.ItemDetailPage.Messages;
       foreach (var Block in Blocks)
       {
         if (Block != null && Block.IsValid())
@@ -56,38 +55,44 @@ namespace cryptogram.Core
           else
           {
             var IsMy = Author == Functions.GetMyPublicKey();
-            var PaddingLeft = 5; var PaddingRight = 5;
-            Xamarin.Forms.Color Background;
-            if (IsMy)
-            {
-              PaddingLeft = 20;
-              Background = Settings.Graphics.BackgroundMyMessage;
-            }
-            else
-            {
-              Background = Settings.Graphics.BackgroundMessage;
-              PaddingRight = 20;
-            }
-            var Frame = new Xamarin.Forms.Frame() { CornerRadius = 10, BackgroundColor = Background, Padding = 0 };
-            var Box = new Xamarin.Forms.StackLayout() { Padding = new Xamarin.Forms.Thickness(PaddingLeft, 5, PaddingRight, 5) };
-            Frame.Content = Box;
-            Container.Children.Add(Frame);
-            switch (Type)
-            {
-              case DataType.Text:
-                var Label = new Xamarin.Forms.Label();
-                Label.Text = Encoding.Unicode.GetString(DataElement);
-                Box.Children.Add(Label);
-                break;
-              case DataType.Image:
-                break;
-              case DataType.Audio:
-                break;
-              default:
-                break;
-            }
+            AddMessageView(Type, DataElement, IsMy);
           }
         }
+      }
+    }
+
+    private static void AddMessageView(DataType Type, Byte[] Data, bool IsMyMessage)
+    {
+      var Container = cryptogram.Views.ItemDetailPage.Messages;
+      var PaddingLeft = 5; var PaddingRight = 5;
+      Xamarin.Forms.Color Background;
+      if (IsMyMessage)
+      {
+        PaddingLeft = 20;
+        Background = Settings.Graphics.BackgroundMyMessage;
+      }
+      else
+      {
+        Background = Settings.Graphics.BackgroundMessage;
+        PaddingRight = 20;
+      }
+      var Frame = new Xamarin.Forms.Frame() { CornerRadius = 10, BackgroundColor = Background, Padding = 0 };
+      var Box = new Xamarin.Forms.StackLayout() { Padding = new Xamarin.Forms.Thickness(PaddingLeft, 5, PaddingRight, 5) };
+      Frame.Content = Box;
+      Container.Children.Insert(0, Frame);
+      switch (Type)
+      {
+        case DataType.Text:
+          var Label = new Xamarin.Forms.Label();
+          Label.Text = Encoding.Unicode.GetString(Data);
+          Box.Children.Add(Label);
+          break;
+        case DataType.Image:
+          break;
+        case DataType.Audio:
+          break;
+        default:
+          break;
       }
     }
 
@@ -197,6 +202,8 @@ namespace cryptogram.Core
       Blockchain.Block NewBlock = new Blockchain.Block(Blockchain, BlockchainData);
       var Signature = Functions.GetMyRSA().SignHash(NewBlock.HashBody(), System.Security.Cryptography.CryptoConfig.MapNameToOID("SHA256"));
       bool IsValid = NewBlock.AddBodySignature(PublicKeyBase64, Signature, true); //Add signature e add the block to blockchain now
+
+      AddMessageView(Type, Data, true);
     }
 
     public static void SendText(string Text)

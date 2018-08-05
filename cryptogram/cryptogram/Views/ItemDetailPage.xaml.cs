@@ -41,13 +41,10 @@ namespace cryptogram.Views
 
     private void Send_Clicked(object sender, EventArgs e)
     {
-      Core.Messaging.SendText(GetTextMessage().Text);
+      Core.Messaging.SendText(TextMessage.Text);
     }
 
-    private Editor GetTextMessage()
-    {
-      return this.FindByName<Editor>("TextMessage");
-    }
+
 
   }
 }

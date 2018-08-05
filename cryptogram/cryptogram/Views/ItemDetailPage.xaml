@@ -5,12 +5,18 @@
              x:Class="cryptogram.Views.ItemDetailPage"
              Title="{Binding Title}">
     <StackLayout Spacing="20" Padding="15">
-        <StackLayout x:Name="MessageList"></StackLayout>
-        <Label Text="{x:Static local:Dictionary.ContactName}" FontSize="Medium" />
-        <Entry x:Name="ContactName" Text="{Binding Item.ContactName}" FontSize="Small"/>
-        <Label Text="{x:Static local:Dictionary.PublicKey}" FontSize="Medium" />
-        <Entry x:Name="PublicKey" Text="{Binding Item.PublicKey}" FontSize="Small"/>
-        <Editor x:Name="TextMessage" FontSize="Medium"></Editor>
-        <Button Text="{x:Static local:Dictionary.Send}" Clicked="Send_Clicked" ></Button>
+        <StackLayout VerticalOptions="Start">
+            <Label Text="{x:Static local:Dictionary.ContactName}" FontSize="Medium" />
+            <Entry x:Name="ContactName" Text="{Binding Item.ContactName}" FontSize="Small"/>
+            <Label Text="{x:Static local:Dictionary.PublicKey}" FontSize="Medium" />
+            <Entry x:Name="PublicKey" Text="{Binding Item.PublicKey}" FontSize="Small"/>
+        </StackLayout>
+        <ScrollView >
+            <StackLayout x:Name="MessageList"></StackLayout>
+        </ScrollView>
+        <StackLayout VerticalOptions="End">
+            <Editor x:Name="TextMessage" FontSize="Medium"></Editor>
+            <Button Text="{x:Static local:Dictionary.Send}" Clicked="Send_Clicked" ></Button>
+        </StackLayout>
     </StackLayout>
 </ContentPage>

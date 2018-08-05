@@ -544,18 +544,26 @@ namespace BlockchainManager
           Stream = new System.IO.StreamReader(File);
           if (Position == -1)
             Position = Stream.BaseStream.Length;
-          long StartRead = Position - MaxBlockLenght;
+          long StartRead = Position - Convert.ToInt64(MaxBlockLenght);
           if (StartRead < 0)
             StartRead = 0;
           Stream.BaseStream.Position = StartRead;
 
-          int Len = (int)(Position - StartRead);
-          var Buffer = new char[Len];
+          long LenL = Position - StartRead;//Dont'change!, otherwise in Android don't work
+          int Len = Convert.ToInt32(LenL);//Dont'change!, otherwise in Android don't work
+
+          //do
+          //{
+          //  Data += Stream.ReadLine();
+          //} while (Data.Length < Len);
+          char[] Buffer = new char[1000]; //Dont'work in Android
+
+          //char[] Buffer = new char[Len]; //Dont'work in Android
           Len = Stream.Read(Buffer, 0, Len);
           Data = new string(Buffer);
 
 
-          //Data = Stream.ReadToEnd();
+
         }
         catch (Exception ex)
         {
