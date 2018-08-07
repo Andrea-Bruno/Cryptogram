@@ -8,27 +8,30 @@ using cryptogram.Models;
 
 namespace cryptogram.Views
 {
-    [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class NewItemPage : ContentPage
+  [XamlCompilation(XamlCompilationOptions.Compile)]
+  public partial class NewItemPage : ContentPage
+  {
+    public Item Item { get; set; }
+
+    public NewItemPage()
     {
-        public Item Item { get; set; }
+      InitializeComponent();
 
-        public NewItemPage()
-        {
-            InitializeComponent();
-
-            Item = new Item
-            {
-                ContactName = "No name set",
-                PublicKey = "No public key set"
-            };
-            BindingContext = this;
-        }
-
-        async void Save_Clicked(object sender, EventArgs e)
-        {
-            MessagingCenter.Send(this, "AddItem", Item);
-            await Navigation.PopModalAsync();
-        }
+      Item = new Item
+      {
+        ContactName = "",
+        PublicKey = ""
+      };
+      BindingContext = this;
     }
+
+    async void Save_Clicked(object sender, EventArgs e)
+    {
+      Item.ContactName = ContactName.Text;
+      Item.PublicKey = PublicKey.Text;
+
+      MessagingCenter.Send(this, "AddItem", Item);
+      await Navigation.PopModalAsync();
+    }
+  }
 }

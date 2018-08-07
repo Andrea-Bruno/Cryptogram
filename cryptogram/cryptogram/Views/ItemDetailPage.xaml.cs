@@ -21,6 +21,8 @@ namespace cryptogram.Views
       string PublicKeys = PublicKey.Text + " " + Core.Functions.GetMyPublicKey();
       var Keys = PublicKeys.Split(' ');
       cryptogram.Core.Messaging.Participants = new System.Collections.Generic.List<string>(Keys);
+      //TextMessage.Completed += Send_Clicked;
+      TextMessage.Focus();
     }
 
     public static StackLayout Messages;
@@ -31,8 +33,8 @@ namespace cryptogram.Views
 
       var item = new Item
       {
-        ContactName = "Not name set",
-        PublicKey = "Not pubblic key set"
+        ContactName = "",
+        PublicKey = ""
       };
 
       viewModel = new ItemDetailViewModel(item);
@@ -42,9 +44,14 @@ namespace cryptogram.Views
     private void Send_Clicked(object sender, EventArgs e)
     {
       Core.Messaging.SendText(TextMessage.Text);
+      TextMessage.Text = "";
     }
 
-
-
+    async void Remove_Clicked(object sender, EventArgs e)
+    {      
+      var Item = viewModel.Item;
+      MessagingCenter.Send(this, "DeleteItem", Item);
+      await Navigation.PopAsync();
+    }
   }
 }

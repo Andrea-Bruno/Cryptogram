@@ -22,6 +22,8 @@ namespace cryptogram.Resources
           Alert = "Avviso";
           Ok = "Ok";
           InvalidPublikKey = "Chiave pubblica non valida!";
+          Add = "Aggiungi";
+          Remove = "Rimuovi";
           break;
         default:
           ContactName = "Contact name";
@@ -34,6 +36,8 @@ namespace cryptogram.Resources
           Alert = "Alert";
           Ok = "Ok";
           InvalidPublikKey = "Public key not valid!";
+          Add = "Add";
+          Remove = "Remove";
           break;
       }
     }
@@ -47,5 +51,7 @@ namespace cryptogram.Resources
     public static string Alert;
     public static string Ok;
     public static string InvalidPublikKey;
+    public static string Add;
+    public static string Remove;
   }
 }

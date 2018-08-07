@@ -11,7 +11,6 @@ namespace cryptogram.Views
 		public AboutPage ()
 		{
 			InitializeComponent ();
-
     }
   }
 }

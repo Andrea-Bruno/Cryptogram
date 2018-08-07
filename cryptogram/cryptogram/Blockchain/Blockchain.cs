@@ -314,7 +314,7 @@ namespace BlockchainManager
             System.IO.Directory.CreateDirectory(this.Blockchain.Directory());
           using (System.IO.StreamWriter sw = System.IO.File.AppendText(this.Blockchain.PathNameFile()))
           {
-            sw.WriteLine(Record, this.Blockchain.BlockSeparator);
+            sw.Write(Record + this.Blockchain.BlockSeparator);
           }
           return true;
         }
@@ -544,26 +544,15 @@ namespace BlockchainManager
           Stream = new System.IO.StreamReader(File);
           if (Position == -1)
             Position = Stream.BaseStream.Length;
-          long StartRead = Position - Convert.ToInt64(MaxBlockLenght);
+          long StartRead = Position - (long)MaxBlockLenght;
           if (StartRead < 0)
             StartRead = 0;
           Stream.BaseStream.Position = StartRead;
 
-          long LenL = Position - StartRead;//Dont'change!, otherwise in Android don't work
-          int Len = Convert.ToInt32(LenL);//Dont'change!, otherwise in Android don't work
-
-          //do
-          //{
-          //  Data += Stream.ReadLine();
-          //} while (Data.Length < Len);
-          char[] Buffer = new char[1000]; //Dont'work in Android
-
-          //char[] Buffer = new char[Len]; //Dont'work in Android
+          int Len = (int)(Position - StartRead);
+          char[] Buffer = new char[Len];
           Len = Stream.Read(Buffer, 0, Len);
           Data = new string(Buffer);
-
-
-
         }
         catch (Exception ex)
         {

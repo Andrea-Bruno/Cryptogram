@@ -10,9 +10,9 @@
     <ContentPage.Content>
         <StackLayout Spacing="20" Padding="15">
             <Label Text="{x:Static local:Dictionary.ContactName}" FontSize="Medium" />
-            <Entry Text="{Binding Item.Text}" FontSize="Small" />
+            <Entry x:Name="ContactName" Text="{Binding Item.Text}" FontSize="Small" />
             <Label Text="{x:Static local:Dictionary.PublicKey}" FontSize="Medium" />
-            <Entry Text="{Binding Item.Description}" FontSize="Small" />
+            <Entry x:Name="PublicKey" Text="{Binding Item.PublicKey}" FontSize="Small" />
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

@@ -4,6 +4,17 @@
              xmlns:local="using:cryptogram.Resources"
              x:Class="cryptogram.Views.ItemDetailPage"
              Title="{Binding Title}">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="{x:Static local:Dictionary.Remove}" Clicked="Remove_Clicked">
+            <ToolbarItem.Icon>
+                <OnPlatform x:TypeArguments="FileImageSource">
+                    <On Platform="UWP" Value="remove.png"/>
+                </OnPlatform>
+            </ToolbarItem.Icon>
+        </ToolbarItem>
+    </ContentPage.ToolbarItems>
+
+
     <StackLayout Spacing="20" Padding="15">
         <StackLayout VerticalOptions="Start">
             <Label Text="{x:Static local:Dictionary.ContactName}" FontSize="Medium" />
@@ -15,7 +26,7 @@
             <StackLayout x:Name="MessageList"></StackLayout>
         </ScrollView>
         <StackLayout VerticalOptions="End">
-            <Editor x:Name="TextMessage" FontSize="Medium"></Editor>
+            <Editor x:Name="TextMessage" FontSize="Medium" AutoSize="TextChanges"></Editor>
             <Button Text="{x:Static local:Dictionary.Send}" Clicked="Send_Clicked" ></Button>
         </StackLayout>
     </StackLayout>

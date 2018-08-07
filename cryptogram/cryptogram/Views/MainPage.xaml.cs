@@ -10,7 +10,7 @@ namespace cryptogram.Views
 	{
 		public MainPage ()
 		{
-			InitializeComponent ();
+      InitializeComponent ();
 		}
 	}
 }

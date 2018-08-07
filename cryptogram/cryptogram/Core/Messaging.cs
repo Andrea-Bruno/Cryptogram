@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using BlockchainManager;
+
+// C:\Users\Andrea\AppData\Local\Packages\0aecfc2f-ac07-4958-873b-e4079421c833_805bqyqnptpj0\LocalState\blockchains\cryptogram
+
 namespace cryptogram.Core
 {
   public static class Messaging
@@ -202,6 +205,7 @@ namespace cryptogram.Core
       Blockchain.Block NewBlock = new Blockchain.Block(Blockchain, BlockchainData);
       var Signature = Functions.GetMyRSA().SignHash(NewBlock.HashBody(), System.Security.Cryptography.CryptoConfig.MapNameToOID("SHA256"));
       bool IsValid = NewBlock.AddBodySignature(PublicKeyBase64, Signature, true); //Add signature e add the block to blockchain now
+      if (!IsValid) System.Diagnostics.Debugger.Break();
 
       AddMessageView(Type, Data, true);
     }
