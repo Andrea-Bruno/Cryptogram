@@ -23,11 +23,6 @@ namespace cryptogram
     protected override void OnStart()
     {
       // Handle when your app starts
-      if (!Application.Current.Properties.ContainsKey("keys"))
-      {
-        System.Security.Cryptography.RSACryptoServiceProvider RSA = new System.Security.Cryptography.RSACryptoServiceProvider();
-        Application.Current.Properties.Add("keys", RSA.ExportCspBlob(true));
-      }
       OnResume();
     }
 
@@ -39,8 +34,6 @@ namespace cryptogram
     protected override void OnResume()
     {
       // Handle when your app resumes
-      Application.Current.Properties.TryGetValue("keys",out object GetKey);
-      byte[] Keys = (byte[])GetKey;
     }
 
   }

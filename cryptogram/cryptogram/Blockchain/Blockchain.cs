@@ -72,8 +72,8 @@ namespace BlockchainManager
       Binary
     }
     public int MaxBlockLenght = 2048;
-    public string BlockSeparator = "\r\n";
-    public string FieldsSeparator = "\t";
+    private const string BlockSeparator = "\r\n";
+    private const string FieldsSeparator = "\t";
     public long Length()
     {
       if (System.IO.File.Exists(this.PathNameFile()))
@@ -88,19 +88,42 @@ namespace BlockchainManager
         Stream.SetLength(Position);
       }
     }
+
+    /// <summary>
+    /// This object is used to send or receive blocks
+    /// To receive the blocks from the remote server, set the RequestSendBlocksFromPosition parameter
+    /// The parameter Position indicates the position in the blockchain of the inserted vector blocks
+    /// Position is base 0
+    /// </summary>
     public class VectorBlocks
     {
+      public VectorBlocks()
+      {
+      }
+      public VectorBlocks(Blockchain Blockchain)
+      {
+        this.Blockchain = Blockchain;
+      }
       public Blockchain Blockchain;
-      public string Group;
-      public string Name;
-      public long Position = -1;
+      public long Position = -1; //Base 0
       public long RequestSendBlocksFromPosition = -1;
-      public Block[] Blocks = new Block[0];
+      public List<Block> Blocks
+      {
+        set
+        {
+          List<string> List = new List<string>();
+          foreach (var Block in value)
+            List.Add(Block.Record);
+          Records = List.ToArray();
+        }
+      }
+      public string[] Records;
     }
+
     /// <summary>
     /// Synchronize the local blockchain, with the nodes remotely
     /// </summary>
-    public void SyncNodes()
+    public void RequestAnyNewBlocks()
     {
       foreach (var Node in Setup.Network.NodeList)
       {
@@ -131,7 +154,16 @@ namespace BlockchainManager
         {
           Converter.XmlToObject(ReturnXmlObject, typeof(VectorBlocks), out Obj);
           VectorBlocks ReturnVector = (VectorBlocks)Obj;
-          SyncBlocksFromNetwork(ReturnVector);
+          if (ReturnVector.Blockchain == null)
+            ReturnVector.Blockchain = Vector.Blockchain;
+          if (ReturnVector.RequestSendBlocksFromPosition != -1)
+          {
+            var BlocksToSend = GetBlocks(ReturnVector.RequestSendBlocksFromPosition);
+            VectorBlocks VectorToSend = new VectorBlocks() { Blockchain = this, Blocks = BlocksToSend, Position = ReturnVector.RequestSendBlocksFromPosition };
+            VectorToNode(VectorToSend, Server, MachineName);
+          }
+          else
+            UpdateLocalBlockchain(ReturnVector);
         }
         else
         {
@@ -148,18 +180,25 @@ namespace BlockchainManager
     }
     public void SyncBlocksToNetwork(List<Block> Blocks, long Position)
     {
-      VectorBlocks Vector = new VectorBlocks() { Blockchain = this, Blocks = Blocks.ToArray(), Position = Position };
+      VectorBlocks Vector = new VectorBlocks() { Blockchain = this, Blocks = Blocks, Position = Position };
       foreach (var Node in Setup.Network.NodeList)
       {
         if (Node.MachineName != Setup.Network.MachineName)
           VectorToNode(Vector, Node.Server, Node.MachineName);
       }
     }
-    public static bool SyncBlocksFromNetwork(VectorBlocks Vector, VectorBlocks SetReturnVector = null)
+
+    /// <summary>
+    /// Add to the local blockchain the blocks received from the server
+    /// This function is normally called by the Page.Load event when a Vector is received remotely
+    /// </summary>
+    /// <param name="Vector">Parameter that is used to send blocks or to request blocks</param>
+    /// <param name="SetReturnVector">This parameter returns a vector containing possible blocks to be synchronized on the local blockchain</param>
+    /// <returns></returns>
+    public static bool UpdateLocalBlockchain(VectorBlocks Vector, VectorBlocks SetReturnVector = null)
     {
+
       Blockchain Blockchain = Vector.Blockchain;
-      if (Blockchain == null)
-        Blockchain = Blockchain.Load(Vector.Group, Vector.Name);
       long CurrentLength = Blockchain.Length();
       if (CurrentLength == 0)
         Blockchain.Save();
@@ -169,18 +208,25 @@ namespace BlockchainManager
         if (CurrentLength > Vector.RequestSendBlocksFromPosition)
         {
           SetReturnVector.Blockchain = Blockchain;
-          SetReturnVector.Blocks = Blockchain.GetBlocks(Vector.RequestSendBlocksFromPosition).ToArray();
+          SetReturnVector.Blocks = Blockchain.GetBlocks(Vector.RequestSendBlocksFromPosition);
           SetReturnVector.Position = Vector.RequestSendBlocksFromPosition;
         }
+        else if (CurrentLength < Vector.RequestSendBlocksFromPosition)
+        {
+          SetReturnVector.Blockchain = Blockchain;
+          SetReturnVector.RequestSendBlocksFromPosition = CurrentLength;
+          //qui non mi ricordo cosa stavo facendo, probabilmente devo continuare da qui
+          //VectorToNode()
+        }
       }
-      else
+      else if (Vector.Position != -1)
       {
         if (CurrentLength > Vector.Position)
         {
           if (SetReturnVector != null)
           {
             SetReturnVector.Blockchain = Blockchain;
-            SetReturnVector.Blocks = Blockchain.GetBlocks(Vector.Position).ToArray();
+            SetReturnVector.Blocks = Blockchain.GetBlocks(Vector.Position);
             SetReturnVector.Position = Vector.Position;
           }
           else
@@ -192,9 +238,9 @@ namespace BlockchainManager
 
         if (CurrentLength == Vector.Position)
         {
-          foreach (Block Block in Vector.Blocks)
+          foreach (String Record in Vector.Records)
           {
-            if (!Block.AddToBlockchain(Blockchain))
+            if (!Blockchain.AddRecord(Record))
               // Error in blockchain
               return false;
           }
@@ -308,20 +354,7 @@ namespace BlockchainManager
       {
         if (this.Blockchain == null)
           this.Blockchain = Blockchain;
-        try
-        {
-          if ((!System.IO.Directory.Exists(this.Blockchain.Directory())))
-            System.IO.Directory.CreateDirectory(this.Blockchain.Directory());
-          using (System.IO.StreamWriter sw = System.IO.File.AppendText(this.Blockchain.PathNameFile()))
-          {
-            sw.Write(Record + this.Blockchain.BlockSeparator);
-          }
-          return true;
-        }
-        catch (Exception ex)
-        {
-          return false;
-        }
+        return this.Blockchain.AddBlock(this);
       }
       private string _Data;
       public string Data
@@ -626,6 +659,28 @@ namespace BlockchainManager
       }
       return List;
     }
+    internal bool AddBlock(Block Block)
+    {
+      return AddRecord(Block.Record);
+    }
+    internal bool AddRecord(string Record)
+    {
+      try
+      {
+        if ((!System.IO.Directory.Exists(Directory())))
+          System.IO.Directory.CreateDirectory(Directory());
+        using (System.IO.StreamWriter sw = System.IO.File.AppendText(PathNameFile()))
+        {
+          sw.Write(Record + BlockSeparator);
+        }
+        return true;
+      }
+      catch (Exception ex)
+      {
+        return false;
+      }
+    }
   }
+
 }
 

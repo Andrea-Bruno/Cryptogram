@@ -87,9 +87,9 @@ Global
 		{795FE44C-AF98-4EFA-92BB-0FF2808870BD}.Debug|x86.ActiveCfg = Debug|iPhone
 		{795FE44C-AF98-4EFA-92BB-0FF2808870BD}.Debug|x86.Build.0 = Debug|iPhone
 		{795FE44C-AF98-4EFA-92BB-0FF2808870BD}.Debug|x86.Deploy.0 = Debug|iPhone
-		{795FE44C-AF98-4EFA-92BB-0FF2808870BD}.Release|Any CPU.ActiveCfg = Release|iPhone
-		{795FE44C-AF98-4EFA-92BB-0FF2808870BD}.Release|Any CPU.Build.0 = Release|iPhone
-		{795FE44C-AF98-4EFA-92BB-0FF2808870BD}.Release|Any CPU.Deploy.0 = Release|iPhone
+		{795FE44C-AF98-4EFA-92BB-0FF2808870BD}.Release|Any CPU.ActiveCfg = Release|iPhoneSimulator
+		{795FE44C-AF98-4EFA-92BB-0FF2808870BD}.Release|Any CPU.Build.0 = Release|iPhoneSimulator
+		{795FE44C-AF98-4EFA-92BB-0FF2808870BD}.Release|Any CPU.Deploy.0 = Release|iPhoneSimulator
 		{795FE44C-AF98-4EFA-92BB-0FF2808870BD}.Release|ARM.ActiveCfg = Release|iPhone
 		{795FE44C-AF98-4EFA-92BB-0FF2808870BD}.Release|ARM.Build.0 = Release|iPhone
 		{795FE44C-AF98-4EFA-92BB-0FF2808870BD}.Release|ARM.Deploy.0 = Release|iPhone

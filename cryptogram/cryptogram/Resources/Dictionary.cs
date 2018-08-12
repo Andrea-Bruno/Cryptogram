@@ -21,9 +21,12 @@ namespace cryptogram.Resources
           Save = "Salva";
           Alert = "Avviso";
           Ok = "Ok";
-          InvalidPublikKey = "Chiave pubblica non valida!";
+          InvalidKey = "Chiave non valida!";
           Add = "Aggiungi";
           Remove = "Rimuovi";
+          Info = "Basato su tecnologia blockchain e decentralizzazione, le vostre comunicazioni sono sicure";
+          OpenSource = "Open Source";
+          EditPrivateKey="Edita chiave privata";
           break;
         default:
           ContactName = "Contact name";
@@ -35,9 +38,12 @@ namespace cryptogram.Resources
           Save = "Save";
           Alert = "Alert";
           Ok = "Ok";
-          InvalidPublikKey = "Public key not valid!";
+          InvalidKey = "Key not valid!";
           Add = "Add";
           Remove = "Remove";
+          Info = "Based on blockchain technology and decentralization, your communications are secure";
+          OpenSource = "Open Source";
+          EditPrivateKey = "Edit private key";
           break;
       }
     }
@@ -50,8 +56,11 @@ namespace cryptogram.Resources
     public static string Save;
     public static string Alert;
     public static string Ok;
-    public static string InvalidPublikKey;
+    public static string InvalidKey;
     public static string Add;
     public static string Remove;
+    public static string Info;
+    public static string OpenSource;
+    public static string EditPrivateKey;
   }
 }

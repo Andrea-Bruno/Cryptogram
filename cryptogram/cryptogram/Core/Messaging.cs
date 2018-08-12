@@ -31,6 +31,7 @@ namespace cryptogram.Core
         byte[] hashBytes = hashType.ComputeHash(Converter.StringToByteArray((PtsStr)));
         BlockChainName = Convert.ToBase64String(hashBytes);
         Blockchain = new Blockchain("cryptogram", BlockChainName, Blockchain.BlockchainType.Binary, true);
+        Blockchain.RequestAnyNewBlocks();
         ReadBlockchain();
       }
     }
@@ -187,7 +188,7 @@ namespace cryptogram.Core
         }
         catch (Exception)
         {
-          Core.Functions.Alert(Resources.Dictionary.InvalidPublikKey);
+          Core.Functions.Alert(Resources.Dictionary.InvalidKey);
         }
       }
     }
@@ -200,13 +201,14 @@ namespace cryptogram.Core
       var GlobalPassword = EncryptPasswordForParticipants(Password);
       var EncryptedData = Cryptography.Encrypt(Data, Password);
       BlockchainData = BlockchainData.Concat(GlobalPassword).Concat(EncryptedData).ToArray();
-
-      var PublicKeyBase64 = Functions.GetMyPublicKey();
+      Blockchain.RequestAnyNewBlocks();
       Blockchain.Block NewBlock = new Blockchain.Block(Blockchain, BlockchainData);
       var Signature = Functions.GetMyRSA().SignHash(NewBlock.HashBody(), System.Security.Cryptography.CryptoConfig.MapNameToOID("SHA256"));
+      var BlockPosition = Blockchain.Length();
+      var PublicKeyBase64 = Functions.GetMyPublicKey();
       bool IsValid = NewBlock.AddBodySignature(PublicKeyBase64, Signature, true); //Add signature e add the block to blockchain now
       if (!IsValid) System.Diagnostics.Debugger.Break();
-
+      Blockchain.SyncBlockToNetwork(NewBlock, BlockPosition);
       AddMessageView(Type, Data, true);
     }
 
@@ -215,20 +217,16 @@ namespace cryptogram.Core
       SendData(DataType.Text, Encoding.Unicode.GetBytes(Text));
     }
 
-    public static void SendPicture(string Message)
+    public static void SendPicture(object Image)
     {
 
     }
 
-    public static void SendAudio(string Message)
+    public static void SendAudio(object Audio)
     {
 
     }
 
-    public class EncapsuleMessage
-    {
-
-    }
     public class Message
     {
       string Recipient;

@@ -21,7 +21,13 @@ namespace cryptogram.Views
       string PublicKeys = PublicKey.Text + " " + Core.Functions.GetMyPublicKey();
       var Keys = PublicKeys.Split(' ');
       cryptogram.Core.Messaging.Participants = new System.Collections.Generic.List<string>(Keys);
-      //TextMessage.Completed += Send_Clicked;
+
+      //=============
+      //for some bug, in my Xamarin android this don't work!!
+      //TextMessage.AutoSize = EditorAutoSizeOption.TextChanges;
+      TextMessage.HeightRequest = 86; // In future replace this with AutoSize
+      //=============
+
       TextMessage.Focus();
     }
 
@@ -48,7 +54,7 @@ namespace cryptogram.Views
     }
 
     async void Remove_Clicked(object sender, EventArgs e)
-    {      
+    {
       var Item = viewModel.Item;
       MessagingCenter.Send(this, "DeleteItem", Item);
       await Navigation.PopAsync();

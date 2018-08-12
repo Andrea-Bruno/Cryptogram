@@ -15,7 +15,7 @@ namespace cryptogram.Core
     public static System.Security.Cryptography.RSACryptoServiceProvider GetMyRSA()
     {
       var RSA = new System.Security.Cryptography.RSACryptoServiceProvider();
-      RSA.ImportCspBlob((byte[])Xamarin.Forms.Application.Current.Properties["keys"]);
+      RSA.ImportCspBlob(Convert.FromBase64String(MyPrivateKey));
       return RSA;
     }
 
@@ -25,10 +25,45 @@ namespace cryptogram.Core
     /// <returns></returns>
     public static string GetMyPublicKey()
     {
-      System.Security.Cryptography.RSACryptoServiceProvider RSA = new System.Security.Cryptography.RSACryptoServiceProvider();
-      RSA.ImportCspBlob((byte[])Xamarin.Forms.Application.Current.Properties["keys"]);
-      return Convert.ToBase64String(RSA.ExportCspBlob(false));
+      return Convert.ToBase64String(GetMyRSA().ExportCspBlob(false));
     }
+
+    private static string _MyPrivateKey;
+    /// <summary>
+    /// Return the private key stored in the device,if not present, it generates one
+    /// </summary>
+    /// <returns></returns>
+    public static string MyPrivateKey
+    {
+      get {
+        if (string.IsNullOrEmpty(_MyPrivateKey))
+          _MyPrivateKey = (string)Storage.LoadObject(typeof(string), "MyPublicKey");
+        if (string.IsNullOrEmpty(_MyPrivateKey)) {
+          _MyPrivateKey = Convert.ToBase64String(new System.Security.Cryptography.RSACryptoServiceProvider().ExportCspBlob(true));
+          MyPrivateKey = _MyPrivateKey; //Save
+        }
+        return _MyPrivateKey;
+      }
+      set {
+        if (_MyPrivateKey != value)
+        {
+          try
+          {
+            var RSA = new System.Security.Cryptography.RSACryptoServiceProvider();
+            RSA.ImportCspBlob(Convert.FromBase64String(value));
+            _MyPrivateKey = value;
+            Storage.SaveObject(_MyPrivateKey, "MyPublicKey");
+          }
+          catch (Exception)
+          {
+            Alert(Resources.Dictionary.InvalidKey);
+            throw;
+          }
+        }
+
+      }
+    }
+
 
     public static void Alert(string Message)
     {
