@@ -9,7 +9,7 @@ namespace cryptogram.ViewModels
     public Item Item { get; set; }
     public ItemDetailViewModel(Item item = null)
     {
-      Core.Messaging.RecipientPublicKeyBase64 = item.PublicKey; 
+      //Core.Messaging.RecipientPublicKeyBase64 = item.PublicKey; 
       Title = item?.ContactName;
       Item = item;
     }

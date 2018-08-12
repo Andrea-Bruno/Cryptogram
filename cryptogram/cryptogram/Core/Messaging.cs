@@ -16,8 +16,26 @@ namespace cryptogram.Core
       Image,
       Audio,
     }
+    const int MaxPartecipants = 10;
     private static string BlockChainName;
     private static Blockchain Blockchain;
+    /// <summary>
+    /// This function starts the messaging chat room
+    /// </summary>
+    /// <param name="PublicKeys">A string containing all the participants' public keys</param>
+    public static void CreateChatRoom(string PublicKeys)
+    {
+      string MyPublicKey = Core.Functions.GetMyPublicKey();
+      if (!PublicKeys.Contains(MyPublicKey))
+        PublicKeys += MyPublicKey;
+      PublicKeys = PublicKeys.Replace("==", "== ");
+      var Keys = PublicKeys.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+      if (Keys.Length > MaxPartecipants)
+        Functions.Alert(Resources.Dictionary.TooManyParticipants);
+      else
+        Participants = new System.Collections.Generic.List<string>(Keys);
+    }
+
     private static List<string> _Participants; //List in base64 format
     public static List<string> Participants
     {
@@ -30,9 +48,15 @@ namespace cryptogram.Core
         System.Security.Cryptography.HashAlgorithm hashType = new System.Security.Cryptography.SHA256Managed();
         byte[] hashBytes = hashType.ComputeHash(Converter.StringToByteArray((PtsStr)));
         BlockChainName = Convert.ToBase64String(hashBytes);
-        Blockchain = new Blockchain("cryptogram", BlockChainName, Blockchain.BlockchainType.Binary, true);
+        Blockchain = new Blockchain("cryptogram", BlockChainName, Blockchain.BlockchainType.Binary, true, 8192);
         Blockchain.RequestAnyNewBlocks();
         ReadBlockchain();
+
+        //Xamarin.Forms.Device.BeginInvokeOnMainThread(delegate
+        //{
+        //  Blockchain.RequestAnyNewBlocks();
+        //  ReadBlockchain();
+        //});
       }
     }
 
@@ -170,28 +194,28 @@ namespace cryptogram.Core
       return RSA.Decrypt(EPassword, true);
     }
 
-    private static byte[] _RecipientPublicKey;
-    public static byte[] RecipientPublicKey
-    {
-      get { return _RecipientPublicKey; }
-      set { _RecipientPublicKey = value; }
-    }
+    //private static byte[] _RecipientPublicKey;
+    //public static byte[] RecipientPublicKey
+    //{
+    //  get { return _RecipientPublicKey; }
+    //  set { _RecipientPublicKey = value; }
+    //}
 
-    public static string RecipientPublicKeyBase64
-    {
-      get { return Convert.ToBase64String(_RecipientPublicKey); }
-      set
-      {
-        try
-        {
-          _RecipientPublicKey = Convert.FromBase64String(value);
-        }
-        catch (Exception)
-        {
-          Core.Functions.Alert(Resources.Dictionary.InvalidKey);
-        }
-      }
-    }
+    //public static string RecipientPublicKeyBase64
+    //{
+    //  get { return Convert.ToBase64String(_RecipientPublicKey); }
+    //  set
+    //  {
+    //    try
+    //    {
+    //      _RecipientPublicKey = Convert.FromBase64String(value);
+    //    }
+    //    catch (Exception)
+    //    {
+    //      Core.Functions.Alert(Resources.Dictionary.InvalidKey);
+    //    }
+    //  }
+    //}
 
     private static void SendData(DataType Type, byte[] Data)
     {
@@ -202,14 +226,19 @@ namespace cryptogram.Core
       var EncryptedData = Cryptography.Encrypt(Data, Password);
       BlockchainData = BlockchainData.Concat(GlobalPassword).Concat(EncryptedData).ToArray();
       Blockchain.RequestAnyNewBlocks();
-      Blockchain.Block NewBlock = new Blockchain.Block(Blockchain, BlockchainData);
-      var Signature = Functions.GetMyRSA().SignHash(NewBlock.HashBody(), System.Security.Cryptography.CryptoConfig.MapNameToOID("SHA256"));
-      var BlockPosition = Blockchain.Length();
-      var PublicKeyBase64 = Functions.GetMyPublicKey();
-      bool IsValid = NewBlock.AddBodySignature(PublicKeyBase64, Signature, true); //Add signature e add the block to blockchain now
-      if (!IsValid) System.Diagnostics.Debugger.Break();
-      Blockchain.SyncBlockToNetwork(NewBlock, BlockPosition);
-      AddMessageView(Type, Data, true);
+      if (BlockchainData.Length * 2 + 4096 <= Blockchain.MaxBlockLenght)
+      {
+        Blockchain.Block NewBlock = new Blockchain.Block(Blockchain, BlockchainData);
+        var Signature = Functions.GetMyRSA().SignHash(NewBlock.HashBody(), System.Security.Cryptography.CryptoConfig.MapNameToOID("SHA256"));
+        var BlockPosition = Blockchain.Length();
+        var PublicKeyBase64 = Functions.GetMyPublicKey();
+        bool IsValid = NewBlock.AddBodySignature(PublicKeyBase64, Signature, true); //Add signature e add the block to blockchain now
+        if (!IsValid) System.Diagnostics.Debugger.Break();
+        Blockchain.SyncBlockToNetwork(NewBlock, BlockPosition);
+        AddMessageView(Type, Data, true);
+      }
+      else
+        Functions.Alert(Resources.Dictionary.ExceededBlockSizeLimit);
     }
 
     public static void SendText(string Text)

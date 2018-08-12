@@ -12,20 +12,22 @@ namespace BlockchainManager
     public Blockchain()
     {
     }
-    public Blockchain(string PublicKey, string Group, string Name, BlockchainType Type, bool AcceptBodySignature)
+    public Blockchain(string PublicKey, string Group, string Name, BlockchainType Type, bool AcceptBodySignature, int MaxBlockLenght = 2048)
     {
       this.PublicKey = PublicKey;
       this.Group = Group;
       this.Name = Name;
       this.Type = Type;
       this.AcceptBodySignature = AcceptBodySignature;
+      this.MaxBlockLenght = MaxBlockLenght;
     }
-    public Blockchain(string Group, string Name, BlockchainType Type, bool AcceptBodySignature)
+    public Blockchain(string Group, string Name, BlockchainType Type, bool AcceptBodySignature, int MaxBlockLenght = 2048)
     {
       this.Group = Group;
       this.Name = Name;
       this.Type = Type;
       this.AcceptBodySignature = AcceptBodySignature;
+      this.MaxBlockLenght = MaxBlockLenght;
     }
     public void Save()
     {
@@ -125,7 +127,9 @@ namespace BlockchainManager
     /// </summary>
     public void RequestAnyNewBlocks()
     {
-      foreach (var Node in Setup.Network.NodeList)
+      var NodeList = Setup.Network.NodeList;
+      var list = NodeList;
+      foreach (var Node in list)
       {
         if (Node.MachineName != Setup.Network.MasterServerMachineName)
         {

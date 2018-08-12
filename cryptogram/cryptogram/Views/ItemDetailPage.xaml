@@ -24,7 +24,7 @@
             <StackLayout x:Name="MessageList"></StackLayout>
         </ScrollView>
         <StackLayout VerticalOptions="End">
-            <Editor x:Name="TextMessage" FontSize="Medium" ></Editor>
+            <Editor x:Name="TextMessage" FontSize="Medium" AutoSize="TextChanges" ></Editor>
             <Button Text="{x:Static local:Dictionary.Send}" Clicked="Send_Clicked" ></Button>
         </StackLayout>
     </StackLayout>

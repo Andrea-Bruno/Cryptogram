@@ -26,7 +26,9 @@ namespace cryptogram.Resources
           Remove = "Rimuovi";
           Info = "Basato su tecnologia blockchain e decentralizzazione, le vostre comunicazioni sono sicure";
           OpenSource = "Open Source";
-          EditPrivateKey="Edita chiave privata";
+          EditPrivateKey = "Edita chiave privata";
+          TooManyParticipants = "Sono stati aggiunti troppi partecipanti ";
+          ExceededBlockSizeLimit = "Superato limite dimensione blocco";
           break;
         default:
           ContactName = "Contact name";
@@ -44,6 +46,8 @@ namespace cryptogram.Resources
           Info = "Based on blockchain technology and decentralization, your communications are secure";
           OpenSource = "Open Source";
           EditPrivateKey = "Edit private key";
+          TooManyParticipants = "Too many participants have been added";
+          ExceededBlockSizeLimit = "Exceeded block size limit";
           break;
       }
     }
@@ -62,5 +66,7 @@ namespace cryptogram.Resources
     public static string Info;
     public static string OpenSource;
     public static string EditPrivateKey;
+    public static string TooManyParticipants;
+    public static string ExceededBlockSizeLimit;
   }
 }
