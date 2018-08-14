@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-using cryptogram.Models;
 using cryptogram.Views;
 using cryptogram.ViewModels;
 
@@ -25,7 +24,7 @@ namespace cryptogram.Views
       BindingContext = viewModel = new ItemsViewModel();
     }
 
-    private Item LastItemSelected;
+    private Core.Messaging.Contact LastItemSelected;
     async void OnItemSelected(object sender, SelectedItemChangedEventArgs args)
     {
       //var item = args.SelectedItem as Item;
@@ -42,7 +41,7 @@ namespace cryptogram.Views
     }
     async void OnItemTapped(object sender, ItemTappedEventArgs args)
     {
-      var item = args.Item as Item;
+      var item = args.Item as Core.Messaging.Contact;
       if (LastItemSelected == item)
         await Navigation.PushAsync(new ItemDetailPage(new ItemDetailViewModel(item)));
       LastItemSelected = item;
@@ -55,7 +54,7 @@ namespace cryptogram.Views
 
     async void RemoveItem_Clicked(object sender, EventArgs e)
     {
-      Item item = (Item)ItemsListView.SelectedItem;
+      Core.Messaging.Contact item = (Core.Messaging.Contact)ItemsListView.SelectedItem;
       if (item != null)
         MessagingCenter.Send(this, "DeleteItem", item);
       //await Navigation.PopModalAsync();

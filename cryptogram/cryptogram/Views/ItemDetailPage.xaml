@@ -3,7 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="using:cryptogram.Resources"
              x:Class="cryptogram.Views.ItemDetailPage"
-             Title="{Binding Title}">
+             Title="{Binding Title}" 
+             Disappearing="ContentPage_Disappearing"
+             Appearing="ContentPage_Appearing">
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="{x:Static local:Dictionary.Remove}" Clicked="Remove_Clicked">
             <ToolbarItem.Icon>
@@ -15,10 +17,10 @@
     </ContentPage.ToolbarItems>
     <StackLayout Spacing="20" Padding="15">
         <StackLayout VerticalOptions="Start">
-            <Label Text="{x:Static local:Dictionary.ContactName}" FontSize="Medium" />
-            <Entry x:Name="ContactName" Text="{Binding Item.ContactName}" FontSize="Small"/>
+            <Label Text="{x:Static local:Dictionary.Name}" FontSize="Medium" />
+            <Entry x:Name="Name" Text="{Binding Item.Name}" FontSize="Small"/>
             <Label Text="{x:Static local:Dictionary.PublicKey}" FontSize="Medium" />
-            <Entry x:Name="PublicKey" Text="{Binding Item.PublicKey}" FontSize="Small"/>
+            <Label x:Name="PublicKey" Text="{Binding Item.PublicKey}" FontSize="Small"/>
         </StackLayout>
         <ScrollView >
             <StackLayout x:Name="MessageList"></StackLayout>

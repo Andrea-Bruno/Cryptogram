@@ -31,8 +31,9 @@
         <ScrollView Grid.Row="1">
             <StackLayout Orientation="Vertical" Padding="16,40,16,40" Spacing="10">
                 <Label Text="{x:Static local:Dictionary.PublicKey}" />
+                <Editor x:Name="PubKeyCopy" IsVisible="False" />
                 <Button x:Name="PubKey" Clicked="PubKey_Clicked" />
-                <Editor x:Name="PrivateKey" IsVisible="False" Unfocused="PrivateKey_Unfocused" />
+                <Editor x:Name="PrivateKey" IsVisible="False" AutoSize="TextChanges" Unfocused="PrivateKey_Unfocused" />
                 <Button x:Name="EditPrivateKey" Text="{x:Static local:Dictionary.EditPrivateKey}" Clicked="EditPrivateKey_Clicked" ></Button>
                 <Label x:Name="AppName" FontAttributes="Bold" FontSize="Large"></Label>
                 <Label Text="{x:Static local:Dictionary.OpenSource}" FontAttributes="Bold"></Label>

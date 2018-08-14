@@ -25,11 +25,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Core\Messaging.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Settings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Core\Storage.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\Item.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Blockchain\Blockchain.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Resources\Dictionary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\IDataStore.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\MockDataStore.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\AboutViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\BaseViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ItemDetailViewModel.cs" />
@@ -68,5 +66,8 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Views\NewItemPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Models\" />
   </ItemGroup>
 </Project>

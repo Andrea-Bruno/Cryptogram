@@ -5,12 +5,25 @@
              x:Class="cryptogram.Views.NewItemPage"
 		     Title="{x:Static local:Dictionary.NewContact}">
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="{x:Static local:Dictionary.Save}" Clicked="Save_Clicked" />
+        <ToolbarItem Text="{x:Static local:Dictionary.Save}" Clicked="Save_Clicked">
+            <ToolbarItem.Icon>
+                <OnPlatform x:TypeArguments="FileImageSource">
+                    <On Platform="UWP" Value="add.png"/>
+                </OnPlatform>
+            </ToolbarItem.Icon>
+        </ToolbarItem>
+        <ToolbarItem Text="{x:Static local:Dictionary.Exit}" Clicked="Exit_Clicked">
+            <ToolbarItem.Icon>
+                <OnPlatform x:TypeArguments="FileImageSource">
+                    <On Platform="UWP" Value="back.png"/>
+                </OnPlatform>
+            </ToolbarItem.Icon>
+        </ToolbarItem>
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <StackLayout Spacing="20" Padding="15">
-            <Label Text="{x:Static local:Dictionary.ContactName}" FontSize="Medium" />
-            <Entry x:Name="ContactName" Text="{Binding Item.Text}" FontSize="Small" />
+            <Label Text="{x:Static local:Dictionary.Name}" FontSize="Medium" />
+            <Entry x:Name="Name" Text="{Binding Item.Name}" FontSize="Small" />
             <Label Text="{x:Static local:Dictionary.PublicKey}" FontSize="Medium" />
             <Entry x:Name="PublicKey" Text="{Binding Item.PublicKey}" FontSize="Small" />
         </StackLayout>

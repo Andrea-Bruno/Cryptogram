@@ -123,7 +123,7 @@ namespace cryptogram.Core
     public static object Deserialize(string NameFile, Type Type = null)
     {
       object Obj = null;
-      if (System.IO.IsolatedStorage.IsolatedStorageFile.GetUserStoreForApplication().FileExists(NameFile));
+      if (System.IO.IsolatedStorage.IsolatedStorageFile.GetUserStoreForApplication().FileExists(NameFile)) ;
       {
         string KeyLock = NameFile.ToLower();
         Exception Er = default(Exception);

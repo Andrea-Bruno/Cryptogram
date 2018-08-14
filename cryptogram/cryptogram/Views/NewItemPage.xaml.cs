@@ -3,23 +3,19 @@ using System.Collections.Generic;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
-
-using cryptogram.Models;
-
 namespace cryptogram.Views
 {
   [XamlCompilation(XamlCompilationOptions.Compile)]
   public partial class NewItemPage : ContentPage
   {
-    public Item Item { get; set; }
+    public Core.Messaging.Contact Item { get; set; }
 
     public NewItemPage()
     {
       InitializeComponent();
-
-      Item = new Item
+      Item = new Core.Messaging.Contact
       {
-        ContactName = "",
+        Name = "",
         PublicKey = ""
       };
       BindingContext = this;
@@ -27,10 +23,15 @@ namespace cryptogram.Views
 
     async void Save_Clicked(object sender, EventArgs e)
     {
-      Item.ContactName = ContactName.Text;
+      Item.Name = Name.Text;
       Item.PublicKey = PublicKey.Text;
 
       MessagingCenter.Send(this, "AddItem", Item);
+      await Navigation.PopModalAsync();
+    }
+
+    async private void Exit_Clicked(object sender, EventArgs e)
+    {
       await Navigation.PopModalAsync();
     }
   }

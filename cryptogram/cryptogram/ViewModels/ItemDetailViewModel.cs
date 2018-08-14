@@ -1,16 +1,12 @@
-﻿using System;
-
-using cryptogram.Models;
-
-namespace cryptogram.ViewModels
+﻿namespace cryptogram.ViewModels
 {
   public class ItemDetailViewModel : BaseViewModel
   {
-    public Item Item { get; set; }
-    public ItemDetailViewModel(Item item = null)
+    public Core.Messaging.Contact Item { get; set; }
+    public ItemDetailViewModel(Core.Messaging.Contact item = null)
     {
       //Core.Messaging.RecipientPublicKeyBase64 = item.PublicKey; 
-      Title = item?.ContactName;
+      Title = item?.Name;
       Item = item;
     }
   }

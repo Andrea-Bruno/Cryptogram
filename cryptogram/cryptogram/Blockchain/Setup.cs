@@ -12,10 +12,10 @@ namespace BlockchainManager
       public NetworkConfiguration()
       {
 #if DEBUG
-        //NodeList = new Node[1] { new Node() { Server = "http://www.bitboxlab.com", MachineName = "", PublicKey = "" } };
-        NodeList = new Node[1] { new Node() { Server = "http://localhost:8080", MachineName = "ANDREA", PublicKey = "" } };
+        NodeList = new Node[1] { new Node() { Server = "http://www.bitboxlab.com", MachineName = "ANDREA", PublicKey = "" } };
+        //NodeList = new Node[1] { new Node() { Server = "http://localhost:8080", MachineName = "ANDREA", PublicKey = "" } };
 #else
-        NodeList = new Node[1] { new Node() { Server = "http://www.bitboxlab.com", MachineName = "", PublicKey = "" } };
+        NodeList = new Node[1] { new Node() { Server = "http://www.bitboxlab.com", MachineName = "ANDREA", PublicKey = "" } };
 #endif
       }
       public string MachineName = Environment.MachineName;

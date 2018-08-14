@@ -12,7 +12,7 @@ namespace cryptogram.Resources
       switch (Lng)
       {
         case "it":
-          ContactName = "Nome contatto";
+          Name = "Nome contatto";
           PublicKey = "Chiave pubblica";
           NewContact = "Nuovo contatto";
           Contacts = "Contatti";
@@ -29,9 +29,10 @@ namespace cryptogram.Resources
           EditPrivateKey = "Edita chiave privata";
           TooManyParticipants = "Sono stati aggiunti troppi partecipanti ";
           ExceededBlockSizeLimit = "Superato limite dimensione blocco";
+          Exit = "Esci";
           break;
         default:
-          ContactName = "Contact name";
+          Name = "Contact name";
           PublicKey = "Public key";
           NewContact = "New contact";
           Contacts = "Contacts";
@@ -48,10 +49,11 @@ namespace cryptogram.Resources
           EditPrivateKey = "Edit private key";
           TooManyParticipants = "Too many participants have been added";
           ExceededBlockSizeLimit = "Exceeded block size limit";
+          Exit = "Exit";
           break;
       }
     }
-    public static string ContactName;
+    public static string Name;
     public static string PublicKey;
     public static string NewContact;
     public static string Contacts;
@@ -68,5 +70,6 @@ namespace cryptogram.Resources
     public static string EditPrivateKey;
     public static string TooManyParticipants;
     public static string ExceededBlockSizeLimit;
+    public static string Exit;
   }
 }
