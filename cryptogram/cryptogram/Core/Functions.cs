@@ -6,7 +6,7 @@ namespace cryptogram.Core
 {
   static class Functions
   {
- 
+
     public static void Alert(string Message)
     {
 #if __ANDROID__
@@ -25,5 +25,22 @@ namespace cryptogram.Core
       });
 #endif
     }
+
+
+    public static bool ShareText(string Text)
+    {
+      try
+      {
+        Xamarin.Forms.Device.OpenUri(new Uri("mailto:?to=&subject=Cryptogram&body=" + System.Net.WebUtility.UrlEncode(Text)));
+        return true;
+      }
+      catch (Exception)
+      {
+        return false;
+      }
+    }
+
+
+
   }
 }

@@ -12,7 +12,7 @@ namespace cryptogram.Core
       byte[] Hash = hashType.ComputeHash(Password);
       var Result = new byte[Data.Length];
       int p = 0;
-      for (int i = 0; i < Data.Length - 1; i++)
+      for (int i = 0; i < Data.Length ; i++)
       {
         Result[i] = (byte)(Data[i] ^ Hash[p]);
         p += 1;

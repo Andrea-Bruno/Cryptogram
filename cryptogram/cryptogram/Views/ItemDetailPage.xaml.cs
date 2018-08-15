@@ -67,5 +67,10 @@ namespace cryptogram.Views
       var Item = viewModel.Item;
       _NameContact = Item.Name;
     }
+
+    private void PublicKey_Clicked(object sender, EventArgs e)
+    {
+      Core.Functions.ShareText(PublicKey.Text);
+    }
   }
 }

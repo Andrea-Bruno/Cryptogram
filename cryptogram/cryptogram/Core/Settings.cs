@@ -8,9 +8,8 @@ namespace cryptogram.Core
   {
     public static class Graphics
     {
-      public static Xamarin.Forms.Color BackgroundMessage = Xamarin.Forms.Color.Azure;
-      public static Xamarin.Forms.Color BackgroundMyMessage = Xamarin.Forms.Color.Aqua;
-
+      public static Xamarin.Forms.Color BackgroundMessage = Xamarin.Forms.Color.FromRgb(0xb7,0xcb,0xf2);
+      public static Xamarin.Forms.Color BackgroundMyMessage = Xamarin.Forms.Color.FromRgb(0xe2, 0xe8, 0xf3);
     }
   }
 }

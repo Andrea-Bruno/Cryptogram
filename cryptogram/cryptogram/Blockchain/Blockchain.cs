@@ -272,10 +272,22 @@ namespace BlockchainManager
         this.Blockchain = Blockchain;
         this.Record = Record;
       }
+      /// <summary>
+      /// Create a block that will be immediately added to the blockchain.
+      /// If the blockchain has set a public key, then the block will not be added now, but will need to be added later once the signature is added
+      /// </summary>
+      /// <param name="Blockchain">The Blockchain used</param>
+      /// <param name="Data">The data to be included in the block</param>
       public Block(Blockchain Blockchain, byte[] Data)
       {
         _Block(Blockchain, Convert.ToBase64String(Data));
       }
+      /// <summary>
+      /// Create a block that will be immediately added to the blockchain.
+      /// If the blockchain has set a public key, then the block will not be added now, but will need to be added later once the signature is added
+      /// </summary>
+      /// <param name="Blockchain">The Blockchain used</param>
+      /// <param name="Data">The data to be included in the block</param>
       public Block(Blockchain Blockchain, string Data)
       {
         switch (Blockchain.Type)
@@ -288,6 +300,12 @@ namespace BlockchainManager
         }
         _Block(Blockchain, Data);
       }
+      /// <summary>
+      /// Set a block that will be immediately added to the blockchain.
+      /// If the blockchain has set a public key, then the block will not be added now, but will need to be added later once the signature is added
+      /// </summary>
+      /// <param name="Blockchain">The Blockchain used</param>
+      /// <param name="Data">The data to be included in the block</param>
       private void _Block(Blockchain Blockchain, string Data)
       {
         this.Blockchain = Blockchain;
@@ -360,6 +378,7 @@ namespace BlockchainManager
           this.Blockchain = Blockchain;
         return this.Blockchain.AddBlock(this);
       }
+      internal bool AddedToBlockchain;
       private string _Data;
       public string Data
       {
@@ -665,6 +684,8 @@ namespace BlockchainManager
     }
     internal bool AddBlock(Block Block)
     {
+      if (Block.AddedToBlockchain)
+        throw new System.InvalidOperationException("The block has already been added to the blockchain");
       return AddRecord(Block.Record);
     }
     internal bool AddRecord(string Record)

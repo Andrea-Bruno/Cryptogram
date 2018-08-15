@@ -24,11 +24,7 @@ namespace cryptogram.Views
 
     private void PubKey_Clicked(object sender, EventArgs e)
     {
-      try
-      {
-        Device.OpenUri(new Uri("mailto:?to=&subject=Cryptogram&body=" + PubKey.Text));
-      }
-      catch (Exception)
+      if (!Core.Functions.ShareText(PubKey.Text))
       {
         PubKey.IsVisible = false;
         PubKeyCopy.Text = PubKey.Text;

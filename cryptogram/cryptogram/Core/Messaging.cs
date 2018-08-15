@@ -55,7 +55,7 @@ namespace cryptogram.Core
       System.Security.Cryptography.HashAlgorithm hashType = new System.Security.Cryptography.SHA256Managed();
       byte[] hashBytes = hashType.ComputeHash(Converter.StringToByteArray((PtsStr)));
       BlockChainName = Convert.ToBase64String(hashBytes);
-      Blockchain = new Blockchain("cryptogram", BlockChainName, Blockchain.BlockchainType.Binary, true, 8192);
+      Blockchain = new Blockchain("cryptogram", BlockChainName, Blockchain.BlockchainType.Binary, false, 8192);
       Blockchain.RequestAnyNewBlocks();
       ReadBlockchain();
       return true;
@@ -74,29 +74,50 @@ namespace cryptogram.Core
         if (Block != null && Block.IsValid())
         {
           var DateAndTime = Block.Timestamp;
-          var Data = Block.DataByteArray;
-          byte Version = Data[0];
-          DataType Type = (DataType)Data[1];
-          var Password = DecryptPassword(Data, out int EncryptedDataPosition);
-          var Len = Data.Length - EncryptedDataPosition;
+          var BlockData = Block.DataByteArray;
+          byte Version = BlockData[0];
+          DataType Type = (DataType)BlockData[1];
+          var Password = DecryptPassword(BlockData, out int EncryptedDataPosition);
+          var Len = BlockData.Length - EncryptedDataPosition;
           var EncryptedData = new byte[Len];
-          Buffer.BlockCopy(Data, EncryptedDataPosition, EncryptedData, 0, Len);
+          Buffer.BlockCopy(BlockData, EncryptedDataPosition, EncryptedData, 0, Len);
           var DataElement = Cryptography.Decrypt(EncryptedData, Password);
-          var Signatures = Block.GetAllBodySignature();
-          var Author = _Participants.Find(x => Signatures.ContainsKey(x));
+          int DataLen = DataElement.Length - 128;
+          byte[] Data = new byte[DataLen];
+          Buffer.BlockCopy(DataElement, 0, Data, 0, DataLen);
+          System.Security.Cryptography.HashAlgorithm hashType = new System.Security.Cryptography.SHA256Managed();
+          byte[] HashData = hashType.ComputeHash(Data);
+          byte[] SignatureOfData = new byte[128];
+          Buffer.BlockCopy(DataElement, DataLen, SignatureOfData, 0, 128);
+          // Find the author
+          string Author = null;
+          foreach (var Partecipant in _Participants)
+          {
+            System.Security.Cryptography.RSACryptoServiceProvider RSAalg = new System.Security.Cryptography.RSACryptoServiceProvider();
+            RSAalg.ImportCspBlob(Convert.FromBase64String(Partecipant));
+            if (RSAalg.VerifyHash(HashData, System.Security.Cryptography.CryptoConfig.MapNameToOID("SHA256"), SignatureOfData))
+            {
+              Author = Partecipant;
+              break;
+            }
+          }
+          //var SignatureOfData = GetMyRSA().SignHash(HashData, System.Security.Cryptography.CryptoConfig.MapNameToOID("SHA256"));
+          //var Signatures = Block.GetAllBodySignature();
+          //var Author = _Participants.Find(x => Signatures.ContainsKey(x));
           if (Author == null)
             System.Diagnostics.Debug.WriteLine("Block written by an impostor");
           else
           {
             var IsMy = Author == GetMyPublicKey();
-            AddMessageView(Type, DataElement, IsMy);
+            AddMessageView(DateAndTime, Type, Data, IsMy);
           }
         }
       }
     }
 
-    private static void AddMessageView(DataType Type, Byte[] Data, bool IsMyMessage)
+    private static void AddMessageView(DateTime Timestamp, DataType Type, Byte[] Data, bool IsMyMessage)
     {
+      var MessageLocalTime = Timestamp.ToLocalTime();
       var Container = cryptogram.Views.ItemDetailPage.Messages;
       var PaddingLeft = 5; var PaddingRight = 5;
       Xamarin.Forms.Color Background;
@@ -114,6 +135,14 @@ namespace cryptogram.Core
       var Box = new Xamarin.Forms.StackLayout() { Padding = new Xamarin.Forms.Thickness(PaddingLeft, 5, PaddingRight, 5) };
       Frame.Content = Box;
       Container.Children.Insert(0, Frame);
+      var TimeLabel = new Xamarin.Forms.Label();
+      TimeSpan Difference = DateTime.Now - MessageLocalTime;
+      if (Difference.TotalDays < 1)
+        TimeLabel.Text = MessageLocalTime.ToLongTimeString();
+      else
+        TimeLabel.Text = MessageLocalTime.ToLongDateString() + " - " + MessageLocalTime.ToLongTimeString();
+      TimeLabel.FontSize = 8;
+      Box.Children.Add(TimeLabel);
       switch (Type)
       {
         case DataType.Text:
@@ -188,14 +217,6 @@ namespace cryptogram.Core
       }
       var EPassword = EncryptedPasswords[MyId];
       var RSA = GetMyRSA();
-      //var x = RSA.Decrypt(pw, true);
-      //for (int i = 0; i < pw.Length - 1; i++)
-      //{
-      //  if (pw[i] != EPassword[i])
-      //  {
-      //    int fail = 1;
-      //  }
-      //}
 
       return RSA.Decrypt(EPassword, true);
     }
@@ -208,19 +229,19 @@ namespace cryptogram.Core
         byte[] BlockchainData = { Version, (byte)Type };
         var Password = GeneratePassword();
         var GlobalPassword = EncryptPasswordForParticipants(Password);
-        var EncryptedData = Cryptography.Encrypt(Data, Password);
+        System.Security.Cryptography.HashAlgorithm hashType = new System.Security.Cryptography.SHA256Managed();
+        byte[] HashData = hashType.ComputeHash(Data);
+        var SignatureOfData = GetMyRSA().SignHash(HashData, System.Security.Cryptography.CryptoConfig.MapNameToOID("SHA256"));
+        var EncryptedData = Cryptography.Encrypt(Data.Concat(SignatureOfData).ToArray(), Password);
         BlockchainData = BlockchainData.Concat(GlobalPassword).Concat(EncryptedData).ToArray();
         Blockchain.RequestAnyNewBlocks();
         if (BlockchainData.Length * 2 + 4096 <= Blockchain.MaxBlockLenght)
         {
           Blockchain.Block NewBlock = new Blockchain.Block(Blockchain, BlockchainData);
-          var Signature = GetMyRSA().SignHash(NewBlock.HashBody(), System.Security.Cryptography.CryptoConfig.MapNameToOID("SHA256"));
           var BlockPosition = Blockchain.Length();
-          var PublicKeyBase64 = GetMyPublicKey();
-          bool IsValid = NewBlock.AddBodySignature(PublicKeyBase64, Signature, true); //Add signature e add the block to blockchain now
-          if (!IsValid) System.Diagnostics.Debugger.Break();
+          if (!NewBlock.IsValid()) System.Diagnostics.Debugger.Break();
           Blockchain.SyncBlockToNetwork(NewBlock, BlockPosition);
-          AddMessageView(Type, Data, true);
+          AddMessageView(NewBlock.Timestamp, Type, Data, true);
         }
         else
           Functions.Alert(Resources.Dictionary.ExceededBlockSizeLimit);
@@ -233,7 +254,10 @@ namespace cryptogram.Core
 
     public static void SendText(string Text)
     {
-      SendData(DataType.Text, Encoding.Unicode.GetBytes(Text));
+      if (Text != null)
+        Text = Text.Trim(" ".ToCharArray());
+      if (!string.IsNullOrEmpty(Text))
+        SendData(DataType.Text, Encoding.Unicode.GetBytes(Text));
     }
 
     public static void SendPicture(object Image)
@@ -279,8 +303,7 @@ namespace cryptogram.Core
           _MyPrivateKey = (string)Storage.LoadObject(typeof(string), "MyPrivateKey");
         if (string.IsNullOrEmpty(_MyPrivateKey))
         {
-          _MyPrivateKey = Convert.ToBase64String(new System.Security.Cryptography.RSACryptoServiceProvider().ExportCspBlob(true));
-          MyPrivateKey = _MyPrivateKey; //Save
+          MyPrivateKey = Convert.ToBase64String(new System.Security.Cryptography.RSACryptoServiceProvider().ExportCspBlob(true)); //Save
         }
         return _MyPrivateKey;
       }
@@ -307,7 +330,40 @@ namespace cryptogram.Core
 
     public class Contact
     {
-      public string Name { get; set; }
+      private string FirstUpper(string Text)
+      {
+        string Value = "";
+        if (!string.IsNullOrEmpty(Text))
+        {
+          bool Last = false;
+          foreach (char c in Text)
+          {
+            if (char.IsLetter(c))
+            {
+              if (!Last)
+                Value += char.ToUpper(c);
+              else
+                Value += c;
+              Last = true;
+            }
+            else
+            {
+              Last = false;
+              Value += c;
+            }
+          }
+        }
+        return Value;
+      }
+      private string _Name;
+      public string Name
+      {
+        get { return _Name; }
+        set
+        {
+          _Name = FirstUpper(value);
+        }
+      }
       private string _PublicKey;
       public string PublicKey
       {
@@ -315,11 +371,14 @@ namespace cryptogram.Core
         set
         {
           _PublicKey = "";
-          foreach (var c in value.ToCharArray())
+          if (value != null)
           {
-            //Clear Base64 string
-            if (char.IsLetterOrDigit(c) || @"+=/".Contains(c))
-              _PublicKey += c;
+            foreach (var c in value.ToCharArray())
+            {
+              //Clear Base64 string
+              if (char.IsLetterOrDigit(c) || @"+=/".Contains(c))
+                _PublicKey += c;
+            }
           }
         }
       }

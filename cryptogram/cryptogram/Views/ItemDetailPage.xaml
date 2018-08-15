@@ -20,14 +20,14 @@
             <Label Text="{x:Static local:Dictionary.Name}" FontSize="Medium" />
             <Entry x:Name="Name" Text="{Binding Item.Name}" FontSize="Small"/>
             <Label Text="{x:Static local:Dictionary.PublicKey}" FontSize="Medium" />
-            <Label x:Name="PublicKey" Text="{Binding Item.PublicKey}" FontSize="Small"/>
+            <Button x:Name="PublicKey" Text="{Binding Item.PublicKey}" FontSize="Small" Clicked="PublicKey_Clicked"/>
         </StackLayout>
         <ScrollView >
             <StackLayout x:Name="MessageList"></StackLayout>
         </ScrollView>
         <StackLayout VerticalOptions="End">
-            <Editor x:Name="TextMessage" FontSize="Medium" AutoSize="TextChanges" ></Editor>
             <Button Text="{x:Static local:Dictionary.Send}" Clicked="Send_Clicked" ></Button>
+            <Editor x:Name="TextMessage" FontSize="Medium" AutoSize="TextChanges" ></Editor>
         </StackLayout>
     </StackLayout>
 </ContentPage>
