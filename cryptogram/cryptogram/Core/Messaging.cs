@@ -19,56 +19,71 @@ namespace cryptogram.Core
     const int MaxPartecipants = 10;
     private static string BlockChainName;
     private static Blockchain Blockchain;
+
+
     /// <summary>
     /// This function starts the messaging chat room
     /// </summary>
     /// <param name="PublicKeys">A string containing all the participants' public keys</param>
-    public static bool CreateChatRoom(string PublicKeys)
+    public static void CreateChatRoom(string PublicKeys)
     {
-      string MyPublicKey = GetMyPublicKey();
-      if (!PublicKeys.Contains(MyPublicKey))
-        PublicKeys += MyPublicKey;
-      PublicKeys = PublicKeys.Replace("==", "== ");
-      var Keys = PublicKeys.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-      return CreateChatRool(new List<string>(Keys));
+      new System.Threading.Thread(() =>
+      {
+        string MyPublicKey = GetMyPublicKey();
+        if (!PublicKeys.Contains(MyPublicKey))
+          PublicKeys += MyPublicKey;
+        PublicKeys = PublicKeys.Replace("==", "== ");
+        var Keys = PublicKeys.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+        CreateChatRool(new List<string>(Keys));
+      }).Start();
     }
 
     private static List<string> _Participants; //List in base64 format
-    public static bool CreateChatRool(List<string> Partecipants)
+    private static int RunningCreateChatRool = 0;
+    public static void CreateChatRool(List<string> Partecipants)
     {
-      if (Partecipants.Count > MaxPartecipants)
+      RunningCreateChatRool += 1;
+      if (RunningCreateChatRool == 1)
       {
-        Functions.Alert(Resources.Dictionary.TooManyParticipants);
-        return false;
-      }
-      foreach (var MemberKey in Partecipants)
-      {
-        if (!ValidateKey(MemberKey))
+        new System.Threading.Thread(() =>
         {
-          Functions.Alert(Resources.Dictionary.InvalidKey);
-          return false;
-        }
+          if (Partecipants.Count > MaxPartecipants)
+          {
+            Functions.Alert(Resources.Dictionary.TooManyParticipants);
+            RunningCreateChatRool = 0;
+            return;
+          }
+          foreach (var MemberKey in Partecipants)
+          {
+            if (!ValidateKey(MemberKey))
+            {
+              Functions.Alert(Resources.Dictionary.InvalidKey);
+              RunningCreateChatRool = 0;
+              return;
+            }
+          }
+          Partecipants.Sort();
+          _Participants = Partecipants;
+          string PtsStr = string.Join(" ", _Participants.ToArray());
+          System.Security.Cryptography.HashAlgorithm hashType = new System.Security.Cryptography.SHA256Managed();
+          byte[] hashBytes = hashType.ComputeHash(Converter.StringToByteArray((PtsStr)));
+          BlockChainName = Convert.ToBase64String(hashBytes);
+          Blockchain = new Blockchain("cryptogram", BlockChainName, Blockchain.BlockchainType.Binary, false, 8192);
+          var BlockchainLen = ReadBlockchain();
+          new System.Threading.Thread(() =>
+          {
+            Blockchain.RequestAnyNewBlocks();
+            ReadBlockchain(BlockchainLen);
+            RunningCreateChatRool = 0;
+          }).Start();
+        }).Start();
       }
-      Partecipants.Sort();
-      _Participants = Partecipants;
-      string PtsStr = string.Join(" ", _Participants.ToArray());
-      System.Security.Cryptography.HashAlgorithm hashType = new System.Security.Cryptography.SHA256Managed();
-      byte[] hashBytes = hashType.ComputeHash(Converter.StringToByteArray((PtsStr)));
-      BlockChainName = Convert.ToBase64String(hashBytes);
-      Blockchain = new Blockchain("cryptogram", BlockChainName, Blockchain.BlockchainType.Binary, false, 8192);
-      Blockchain.RequestAnyNewBlocks();
-      ReadBlockchain();
-      return true;
-      //Xamarin.Forms.Device.BeginInvokeOnMainThread(delegate
-      //{
-      //  Blockchain.RequestAnyNewBlocks();
-      //  ReadBlockchain();
-      //});
+      return;
     }
 
-    private static void ReadBlockchain()
+    private static long ReadBlockchain(long FromPosizion = 0)
     {
-      var Blocks = Blockchain.GetBlocks(0);
+      var Blocks = Blockchain.GetBlocks(FromPosizion);
       foreach (var Block in Blocks)
       {
         if (Block != null && Block.IsValid())
@@ -113,50 +128,57 @@ namespace cryptogram.Core
           }
         }
       }
+      return Blockchain.Length();
     }
 
     private static void AddMessageView(DateTime Timestamp, DataType Type, Byte[] Data, bool IsMyMessage)
     {
-      var MessageLocalTime = Timestamp.ToLocalTime();
-      var Container = cryptogram.Views.ItemDetailPage.Messages;
-      var PaddingLeft = 5; var PaddingRight = 5;
-      Xamarin.Forms.Color Background;
-      if (IsMyMessage)
+
+      Xamarin.Forms.Device.BeginInvokeOnMainThread(delegate
       {
-        PaddingLeft = 20;
-        Background = Settings.Graphics.BackgroundMyMessage;
-      }
-      else
-      {
-        Background = Settings.Graphics.BackgroundMessage;
-        PaddingRight = 20;
-      }
-      var Frame = new Xamarin.Forms.Frame() { CornerRadius = 10, BackgroundColor = Background, Padding = 0 };
-      var Box = new Xamarin.Forms.StackLayout() { Padding = new Xamarin.Forms.Thickness(PaddingLeft, 5, PaddingRight, 5) };
-      Frame.Content = Box;
-      Container.Children.Insert(0, Frame);
-      var TimeLabel = new Xamarin.Forms.Label();
-      TimeSpan Difference = DateTime.Now - MessageLocalTime;
-      if (Difference.TotalDays < 1)
-        TimeLabel.Text = MessageLocalTime.ToLongTimeString();
-      else
-        TimeLabel.Text = MessageLocalTime.ToLongDateString() + " - " + MessageLocalTime.ToLongTimeString();
-      TimeLabel.FontSize = 8;
-      Box.Children.Add(TimeLabel);
-      switch (Type)
-      {
-        case DataType.Text:
-          var Label = new Xamarin.Forms.Label();
-          Label.Text = Encoding.Unicode.GetString(Data);
-          Box.Children.Add(Label);
-          break;
-        case DataType.Image:
-          break;
-        case DataType.Audio:
-          break;
-        default:
-          break;
-      }
+
+
+        var MessageLocalTime = Timestamp.ToLocalTime();
+        var Container = cryptogram.Views.ChatRoom.Messages;
+        var PaddingLeft = 5; var PaddingRight = 5;
+        Xamarin.Forms.Color Background;
+        if (IsMyMessage)
+        {
+          PaddingLeft = 20;
+          Background = Settings.Graphics.BackgroundMyMessage;
+        }
+        else
+        {
+          Background = Settings.Graphics.BackgroundMessage;
+          PaddingRight = 20;
+        }
+        var Frame = new Xamarin.Forms.Frame() { CornerRadius = 10, BackgroundColor = Background, Padding = 0 };
+        var Box = new Xamarin.Forms.StackLayout() { Padding = new Xamarin.Forms.Thickness(PaddingLeft, 5, PaddingRight, 5) };
+        Frame.Content = Box;
+        Container.Children.Insert(0, Frame);
+        var TimeLabel = new Xamarin.Forms.Label();
+        TimeSpan Difference = DateTime.Now - MessageLocalTime;
+        if (Difference.TotalDays < 1)
+          TimeLabel.Text = MessageLocalTime.ToLongTimeString();
+        else
+          TimeLabel.Text = MessageLocalTime.ToLongDateString() + " - " + MessageLocalTime.ToLongTimeString();
+        TimeLabel.FontSize = 8;
+        Box.Children.Add(TimeLabel);
+        switch (Type)
+        {
+          case DataType.Text:
+            var Label = new Xamarin.Forms.Label();
+            Label.Text = Encoding.Unicode.GetString(Data);
+            Box.Children.Add(Label);
+            break;
+          case DataType.Image:
+            break;
+          case DataType.Audio:
+            break;
+          default:
+            break;
+        }
+      });
     }
 
     private static byte[] GeneratePassword()
@@ -223,51 +245,65 @@ namespace cryptogram.Core
 
     private static void SendData(DataType Type, byte[] Data)
     {
-      try
+      new System.Threading.Thread(() =>
       {
-        const byte Version = 0;
-        byte[] BlockchainData = { Version, (byte)Type };
-        var Password = GeneratePassword();
-        var GlobalPassword = EncryptPasswordForParticipants(Password);
-        System.Security.Cryptography.HashAlgorithm hashType = new System.Security.Cryptography.SHA256Managed();
-        byte[] HashData = hashType.ComputeHash(Data);
-        var SignatureOfData = GetMyRSA().SignHash(HashData, System.Security.Cryptography.CryptoConfig.MapNameToOID("SHA256"));
-        var EncryptedData = Cryptography.Encrypt(Data.Concat(SignatureOfData).ToArray(), Password);
-        BlockchainData = BlockchainData.Concat(GlobalPassword).Concat(EncryptedData).ToArray();
-        Blockchain.RequestAnyNewBlocks();
-        if (BlockchainData.Length * 2 + 4096 <= Blockchain.MaxBlockLenght)
+        try
         {
-          Blockchain.Block NewBlock = new Blockchain.Block(Blockchain, BlockchainData);
-          var BlockPosition = Blockchain.Length();
-          if (!NewBlock.IsValid()) System.Diagnostics.Debugger.Break();
-          Blockchain.SyncBlockToNetwork(NewBlock, BlockPosition);
-          AddMessageView(NewBlock.Timestamp, Type, Data, true);
+          const byte Version = 0;
+          byte[] BlockchainData = { Version, (byte)Type };
+          var Password = GeneratePassword();
+          var GlobalPassword = EncryptPasswordForParticipants(Password);
+          System.Security.Cryptography.HashAlgorithm hashType = new System.Security.Cryptography.SHA256Managed();
+          byte[] HashData = hashType.ComputeHash(Data);
+          var SignatureOfData = GetMyRSA().SignHash(HashData, System.Security.Cryptography.CryptoConfig.MapNameToOID("SHA256"));
+          var EncryptedData = Cryptography.Encrypt(Data.Concat(SignatureOfData).ToArray(), Password);
+          BlockchainData = BlockchainData.Concat(GlobalPassword).Concat(EncryptedData).ToArray();
+          Blockchain.RequestAnyNewBlocks();
+          if (BlockchainData.Length * 2 + 4096 <= Blockchain.MaxBlockLenght)
+          {
+            Blockchain.Block NewBlock = new Blockchain.Block(Blockchain, BlockchainData);
+            var BlockPosition = Blockchain.Length();
+            if (!NewBlock.IsValid()) System.Diagnostics.Debugger.Break();
+            Blockchain.SyncBlockToNetwork(NewBlock, BlockPosition);
+            AddMessageView(NewBlock.Timestamp, Type, Data, true);
+          }
+          else
+            Functions.Alert(Resources.Dictionary.ExceededBlockSizeLimit);
         }
-        else
-          Functions.Alert(Resources.Dictionary.ExceededBlockSizeLimit);
-      }
-      catch (Exception Ex)
-      {
-        Functions.Alert(Ex.Message);
-      }
+        catch (Exception Ex)
+        {
+          Functions.Alert(Ex.Message);
+        }
+        Sending = 0;
+      }).Start();
     }
 
+    private static int Sending = 0;
     public static void SendText(string Text)
     {
-      if (Text != null)
-        Text = Text.Trim(" ".ToCharArray());
-      if (!string.IsNullOrEmpty(Text))
-        SendData(DataType.Text, Encoding.Unicode.GetBytes(Text));
+      Sending += 1;
+      if (Sending==1){
+        if (Text != null)
+          Text = Text.Trim(" ".ToCharArray());
+        if (!string.IsNullOrEmpty(Text))
+          SendData(DataType.Text, Encoding.Unicode.GetBytes(Text));
+      }
     }
 
     public static void SendPicture(object Image)
     {
-
+      Sending += 1;
+      if (Sending == 1)
+      {
+      }
     }
 
     public static void SendAudio(object Audio)
     {
-
+      Sending += 1;
+      if (Sending == 1)
+      {
+      }
     }
 
     /// <summary>
@@ -328,7 +364,7 @@ namespace cryptogram.Core
       }
     }
 
-    public class Contact
+    public class Contact : ICloneable
     {
       private string FirstUpper(string Text)
       {
@@ -382,6 +418,23 @@ namespace cryptogram.Core
           }
         }
       }
+      public void Save()
+      {
+        //UpdateView = true;
+        AddContact(this);
+      }
+      //private bool UpdateView;
+      //public bool IsUpdated()
+      //{
+      //  var UV = UpdateView;
+      //  UpdateView = false;
+      //  return UV;
+      //}
+
+      public object Clone()
+      {
+        return this.MemberwiseClone();
+      }
     }
 
     private static readonly List<Contact> _Contacts = InitContacts();
@@ -404,35 +457,43 @@ namespace cryptogram.Core
     }
     public static bool AddContact(Contact Contact)
     {
-      if (ValidateKey(Contact.PublicKey))
+      lock (_Contacts)
       {
-        lock (_Contacts)
-        {
-          Contact Duplicate = _Contacts.Find(X => X.PublicKey == Contact.PublicKey);
-          if (Duplicate != null)
-            _Contacts.Remove(Duplicate);
-          _Contacts.Add(Contact);
-          var Sorted = _Contacts.OrderBy(o => o.Name).ToList();
-          _Contacts.Clear();
-          _Contacts.AddRange(Sorted);
-        }
-        Storage.SaveObject(_Contacts, "Contacts");
-        return true;
+        if (_Contacts.Contains(Contact))
+          _Contacts.Remove(Contact);
+        Contact Duplicate = _Contacts.Find(X => X.PublicKey == Contact.PublicKey);
+        if (Duplicate != null)
+          _Contacts.Remove(Duplicate);
+        _Contacts.Add(Contact);
+        var Sorted = _Contacts.OrderBy(o => o.Name).ToList();
+        _Contacts.Clear();
+        _Contacts.AddRange(Sorted);
       }
-      else
+      Storage.SaveObject(_Contacts, "Contacts");
+      if (!ValidateKey(Contact.PublicKey))
+      {
         Functions.Alert(Resources.Dictionary.InvalidKey);
-      return false;
+        return false;
+      }
+      return true;
     }
 
+    public static void RemoveContact(Contact Contact)
+    {
+      lock (_Contacts)
+      {
+        if (_Contacts.Contains(Contact))
+        {
+          _Contacts.Remove(Contact);
+          Storage.SaveObject(_Contacts, "Contacts");
+        }
+      }
+    }
     public static void RemoveContact(String Key)
     {
       Contact Contact = _Contacts.Find(X => X.PublicKey == Key);
       if (Contact != null)
-      {
-        lock (_Contacts)
-          _Contacts.Remove(Contact);
-        Storage.SaveObject(_Contacts, "Contacts");
-      }
+        RemoveContact(Contact);
     }
     private static bool ValidateKey(string Key)
     {

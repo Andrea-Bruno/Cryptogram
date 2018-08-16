@@ -30,6 +30,10 @@ namespace cryptogram.Resources
           TooManyParticipants = "Sono stati aggiunti troppi partecipanti ";
           ExceededBlockSizeLimit = "Superato limite dimensione blocco";
           Exit = "Esci";
+          Edit = "Modifica";
+          Share = "Condividi";
+          Search = "Search";
+          strictlyConfidentialMessage = "Messaggio strettamente confidenziale";
           break;
         default:
           Name = "Contact name";
@@ -50,6 +54,10 @@ namespace cryptogram.Resources
           TooManyParticipants = "Too many participants have been added";
           ExceededBlockSizeLimit = "Exceeded block size limit";
           Exit = "Exit";
+          Edit = "Edit";
+          Share = "Share";
+          Search = "Seach";
+          strictlyConfidentialMessage = "Strictly confidential message";
           break;
       }
     }
@@ -71,5 +79,9 @@ namespace cryptogram.Resources
     public static string TooManyParticipants;
     public static string ExceededBlockSizeLimit;
     public static string Exit;
+    public static string Edit;
+    public static string Share;
+    public static string Search;
+    public static string strictlyConfidentialMessage; 
   }
 }

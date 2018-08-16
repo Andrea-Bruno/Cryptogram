@@ -133,6 +133,8 @@
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
     <Content Include="Assets\Wide310x150Logo.scale-400.png" />
     <Content Include="back.png" />
+    <Content Include="edit.png" />
+    <Content Include="share.png" />
     <Content Include="remove.png" />
     <Content Include="xamarin_logo.png" />
   </ItemGroup>

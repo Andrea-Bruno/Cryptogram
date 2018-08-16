@@ -7,25 +7,31 @@ using cryptogram.ViewModels;
 namespace cryptogram.Views
 {
   [XamlCompilation(XamlCompilationOptions.Compile)]
-  public partial class ItemDetailPage : ContentPage
+  public partial class ChatRoom : ContentPage
   {
     ItemDetailViewModel viewModel;
 
-    public ItemDetailPage(ItemDetailViewModel viewModel)
+    public ChatRoom(ItemDetailViewModel viewModel)
     {
       InitializeComponent();
       Messages = this.FindByName<StackLayout>("MessageList");
       BindingContext = this.viewModel = viewModel;
-      Core.Messaging.CreateChatRoom(PublicKey.Text);
+      TextMessage.Focus();
+
+      Device.BeginInvokeOnMainThread(delegate
+      {
+        Core.Messaging.CreateChatRoom(viewModel.Item.PublicKey);
+      });
+
+
       //this.Appearing += delegate
       //          {
       //          };
-      TextMessage.Focus();
     }
 
     public static StackLayout Messages;
 
-    public ItemDetailPage()
+    public ChatRoom()
     {
       InitializeComponent();
 
@@ -37,6 +43,9 @@ namespace cryptogram.Views
 
       viewModel = new ItemDetailViewModel(item);
       BindingContext = viewModel;
+
+
+      Core.Functions.Alert("prova");
     }
 
     private void Send_Clicked(object sender, EventArgs e)
@@ -48,7 +57,7 @@ namespace cryptogram.Views
     async void Remove_Clicked(object sender, EventArgs e)
     {
       var Item = viewModel.Item;
-      MessagingCenter.Send(this, "DeleteItem", Item);
+      Core.Messaging.RemoveContact(Item);
       await Navigation.PopAsync();
     }
 
@@ -56,21 +65,34 @@ namespace cryptogram.Views
     {
       var Item = viewModel.Item;
       if (Item.Name != _NameContact)
-      {
-        MessagingCenter.Send(this, "UpdateItem", Item);
-      }
+        Item.Save();
     }
 
+    private Color? Watermark;
     private string _NameContact;
     private void ContentPage_Appearing(object sender, EventArgs e)
     {
+      if (string.IsNullOrEmpty(TextMessage.Text))
+      {
+        Watermark = TextMessage.TextColor;
+        TextMessage.TextColor = Color.FromRgba(128, 128, 128, 128);
+        TextMessage.IsSpellCheckEnabled = false;
+        TextMessage.Text = cryptogram.Resources.Dictionary.strictlyConfidentialMessage + ": «We are anonymous!»";
+      };
       var Item = viewModel.Item;
       _NameContact = Item.Name;
     }
 
-    private void PublicKey_Clicked(object sender, EventArgs e)
+    private void TextMessage_Focused(object sender, FocusEventArgs e)
     {
-      Core.Functions.ShareText(PublicKey.Text);
+      if (Watermark != null)
+      {
+        TextMessage.TextColor = (Color)Watermark;
+        Watermark = null;
+        TextMessage.Text = "";
+        TextMessage.IsSpellCheckEnabled = false;
+      }
+
     }
   }
 }

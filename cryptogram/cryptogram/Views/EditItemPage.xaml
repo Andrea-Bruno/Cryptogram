@@ -2,23 +2,38 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms" 
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
              xmlns:local="using:cryptogram.Resources"
-             x:Class="cryptogram.Views.NewItemPage"
-		     Title="{x:Static local:Dictionary.NewContact}">
+             x:Class="cryptogram.Views.EditItemPage"
+		     Title="{x:Static local:Dictionary.NewContact}"
+             Disappearing="Disappearing" >
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="{x:Static local:Dictionary.Save}" Clicked="Save_Clicked">
+        <ToolbarItem Text="{x:Static local:Dictionary.Share}" Clicked="Share_Clicked">
+            <ToolbarItem.Icon>
+                <OnPlatform x:TypeArguments="FileImageSource">
+                    <On Platform="UWP" Value="share.png"/>
+                </OnPlatform>
+            </ToolbarItem.Icon>
+        </ToolbarItem>
+        <ToolbarItem x:Name="Remove" Text="{x:Static local:Dictionary.Remove}" Clicked="Remove_Clicked">
+            <ToolbarItem.Icon>
+                <OnPlatform x:TypeArguments="FileImageSource">
+                    <On Platform="UWP" Value="remove.png"/>
+                </OnPlatform>
+            </ToolbarItem.Icon>
+        </ToolbarItem>
+        <!--<ToolbarItem Text="{x:Static local:Dictionary.Save}" Clicked="Save_Clicked">
             <ToolbarItem.Icon>
                 <OnPlatform x:TypeArguments="FileImageSource">
                     <On Platform="UWP" Value="add.png"/>
                 </OnPlatform>
             </ToolbarItem.Icon>
-        </ToolbarItem>
-        <ToolbarItem Text="{x:Static local:Dictionary.Exit}" Clicked="Exit_Clicked">
+        </ToolbarItem>-->
+        <!--<ToolbarItem Text="{x:Static local:Dictionary.Exit}" Clicked="Exit_Clicked">
             <ToolbarItem.Icon>
                 <OnPlatform x:TypeArguments="FileImageSource">
                     <On Platform="UWP" Value="back.png"/>
                 </OnPlatform>
             </ToolbarItem.Icon>
-        </ToolbarItem>
+        </ToolbarItem>-->
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <StackLayout Spacing="20" Padding="15">

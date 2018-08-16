@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="using:cryptogram.Resources"
+             x:Class="cryptogram.Views.ChatRoom"
+             Title="{Binding Title}" 
+             Disappearing="ContentPage_Disappearing"
+             Appearing="ContentPage_Appearing">
+    <ContentPage.ToolbarItems>
+    </ContentPage.ToolbarItems>
+    <StackLayout Spacing="20" Padding="15">
+        <ScrollView >
+            <StackLayout x:Name="MessageList"></StackLayout>
+        </ScrollView>
+        <StackLayout VerticalOptions="End">
+            <Button Text="{x:Static local:Dictionary.Send}" Clicked="Send_Clicked" ></Button>
+            <Editor x:Name="TextMessage" FontSize="Medium" AutoSize="TextChanges" Focused="TextMessage_Focused" ></Editor>
+        </StackLayout>
+    </StackLayout>
+</ContentPage>

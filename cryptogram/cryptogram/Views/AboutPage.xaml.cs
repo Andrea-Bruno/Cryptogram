@@ -12,7 +12,7 @@ namespace cryptogram.Views
     public AboutPage()
     {
       InitializeComponent();
-      AppName.Text = "Cryptogram" + " " + "V.0.1";
+      AppName.Text = "Cryptogram" + " " + "V.0.2";
       PubKey.Text = Core.Messaging.GetMyPublicKey();
 
 //#if __ANDROID__

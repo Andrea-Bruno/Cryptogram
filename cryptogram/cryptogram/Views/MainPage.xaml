@@ -12,7 +12,7 @@
                 </OnPlatform>
             </NavigationPage.Icon>
             <x:Arguments>
-                <views:ItemsPage />
+                <views:ContactsPage />
             </x:Arguments>
         </NavigationPage>
 

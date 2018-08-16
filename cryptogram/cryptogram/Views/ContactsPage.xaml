@@ -2,9 +2,9 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="using:cryptogram.Resources"
-             x:Class="cryptogram.Views.ItemsPage"
+             x:Class="cryptogram.Views.ContactsPage"
              Title="{Binding Title}"
-             x:Name="BrowseItemsPage">
+             x:Name="BrowseContactsPage">
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="{x:Static local:Dictionary.Add}" Clicked="AddItem_Clicked">
             <ToolbarItem.Icon>
@@ -13,10 +13,10 @@
                 </OnPlatform>
             </ToolbarItem.Icon>
         </ToolbarItem>
-        <ToolbarItem Text="{x:Static local:Dictionary.Remove}" Clicked="RemoveItem_Clicked">
+        <ToolbarItem Text="{x:Static local:Dictionary.Edit}" Clicked="Edit_Clicked">
             <ToolbarItem.Icon>
                 <OnPlatform x:TypeArguments="FileImageSource">
-                    <On Platform="UWP" Value="remove.png"/>
+                    <On Platform="UWP" Value="edit.png"/>
                 </OnPlatform>
             </ToolbarItem.Icon>
         </ToolbarItem>
@@ -51,6 +51,7 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
+            <Entry x:Name="Find" Text="{Binding Item.Name}" FontSize="Small" TextChanged="Find_TextChanged" Focused="Find_Focused" IsSpellCheckEnabled="False" />
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>
