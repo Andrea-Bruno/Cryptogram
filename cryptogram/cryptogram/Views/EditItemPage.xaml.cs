@@ -15,11 +15,18 @@ namespace cryptogram.Views
       get { return _Contact; }
       set
       {
-        Name.Text = value.Name;
-        PublicKey.Text = value.PublicKey;
+        if (value == null)
+        {
+          Name.Text = "";
+          PublicKey.Text = "";
+        }
+        else
+        {
+          Name.Text = value.Name;
+          PublicKey.Text = value.PublicKey;
+        }
         _Contact = value;
         Edit = true;
-
       }
     }
 
@@ -55,16 +62,11 @@ namespace cryptogram.Views
       }
     }
 
-    async private void Exit_Clicked(object sender, EventArgs e)
-    {
-      await Navigation.PopModalAsync();//Exit
-    }
-
     async private void Remove_Clicked(object sender, EventArgs e)
     {
       Core.Messaging.RemoveContact(Contact);
       Contact = null;
-      await Navigation.PopModalAsync();//Exit
+      await Navigation.PopAsync();//Exit
     }
 
     private void Share_Clicked(object sender, EventArgs e)

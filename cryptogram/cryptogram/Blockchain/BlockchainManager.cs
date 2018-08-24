@@ -12,7 +12,7 @@ namespace BlockchainManager
     public Blockchain()
     {
     }
-    public Blockchain(string PublicKey, string Group, string Name, BlockchainType Type, bool AcceptBodySignature, int MaxBlockLenght = 2048)
+    public Blockchain(string PublicKey, string Group, string Name, BlockchainType Type, BlockSynchronization HowTheBlocksAreLatched, bool AcceptBodySignature, int MaxBlockLenght = 2048)
     {
       this.PublicKey = PublicKey;
       this.Group = Group;
@@ -21,7 +21,7 @@ namespace BlockchainManager
       this.AcceptBodySignature = AcceptBodySignature;
       this.MaxBlockLenght = MaxBlockLenght;
     }
-    public Blockchain(string Group, string Name, BlockchainType Type, bool AcceptBodySignature, int MaxBlockLenght = 2048)
+    public Blockchain(string Group, string Name, BlockchainType Type, BlockSynchronization HowTheBlocksAreLatched, bool AcceptBodySignature, int MaxBlockLenght = 2048)
     {
       this.Group = Group;
       this.Name = Name;
@@ -63,9 +63,24 @@ namespace BlockchainManager
       return null;
     }
     public bool AcceptBodySignature;
-    public string PublicKey; // If is not nothing then all block Checksum are signed with private key 
+    public @TimeSpan ExpiredAfterInactivity;
+    public string PublicKey
+    {
+      set { PublicKeys = new string[1] { value }; }
+    }
+    /// <summary>
+    /// List of private key authorized to sign the block:
+    /// If is not null then all block Checksum are signed with one of this private key  
+    /// </summary>
+    public string[] PublicKeys;
     public string Group;
     public string Name;
+    public BlockSynchronization HowTheBlocksAreLatched;
+    /// <summary>
+    /// If you use the AddInLocalAndSync mode, make sure that no blocks are added simultaneously.
+    /// If you use SendToTheNetworkBuffer mode, the network will add blocks to the blockchain.
+    /// </summary>
+    public enum BlockSynchronization { AddInLocalAndSync, SendToTheNetworkBuffer }
     public BlockchainType Type;
     public enum BlockchainType
     {
@@ -74,6 +89,7 @@ namespace BlockchainManager
       Binary
     }
     public int MaxBlockLenght = 2048;
+    private const int LenghtDataTrasmission = 1024 * 1024 * 20; //20 mega;
     private const string BlockSeparator = "\r\n";
     private const string FieldsSeparator = "\t";
     public long Length()
@@ -108,7 +124,11 @@ namespace BlockchainManager
       }
       public Blockchain Blockchain;
       public long Position = -1; //Base 0
+      /// <summary>
+      /// Ask to receive blocks from the Base 0 position, if this value is -1 then there is no request
+      /// </summary>
       public long RequestSendBlocksFromPosition = -1;
+      public ReadBlocksResult ReadBlocksResult;
       public List<Block> Blocks
       {
         set
@@ -141,43 +161,52 @@ namespace BlockchainManager
     }
     private void VectorToNode(VectorBlocks Vector, string Server, string MachineName)
     {
-      string ReturnObjectName = null;
-      string ReturnXmlObject = null;
-      string ReturnFromUser = null;
-      object Obj = null;
-      var XmlObjectVector = SendObjectSync((object)Vector, Server, null, MachineName);
-      if (!string.IsNullOrEmpty(XmlObjectVector))
+      VectorBlocks ReturnVector;
+      do
       {
-        object ReturmObj;
-        Converter.XmlToObject(XmlObjectVector, typeof(ObjectVector), out ReturmObj);
-        ObjectVector ObjVector = (ObjectVector)ReturmObj;
-        ReturnObjectName = ObjVector.ObjectName;
-        ReturnXmlObject = ObjVector.XmlObject;
-        ReturnFromUser = ObjVector.FromUser;
-        if (ReturnObjectName == "VectorBlocks")
+        ReturnVector = null;
+        string ReturnObjectName = null;
+        string ReturnXmlObject = null;
+        string ReturnFromUser = null;
+        object Obj = null;
+        var XmlObjectVector = SendObjectSync((object)Vector, Server, null, MachineName);
+        if (!string.IsNullOrEmpty(XmlObjectVector))
         {
-          Converter.XmlToObject(ReturnXmlObject, typeof(VectorBlocks), out Obj);
-          VectorBlocks ReturnVector = (VectorBlocks)Obj;
-          if (ReturnVector.Blockchain == null)
-            ReturnVector.Blockchain = Vector.Blockchain;
-          if (ReturnVector.RequestSendBlocksFromPosition != -1)
+          object ReturmObj;
+          Converter.XmlToObject(XmlObjectVector, typeof(ObjectVector), out ReturmObj);
+          ObjectVector ObjVector = (ObjectVector)ReturmObj;
+          ReturnObjectName = ObjVector.ObjectName;
+          ReturnXmlObject = ObjVector.XmlObject;
+          ReturnFromUser = ObjVector.FromUser;
+          if (ReturnObjectName == "VectorBlocks")
           {
-            var BlocksToSend = GetBlocks(ReturnVector.RequestSendBlocksFromPosition);
-            VectorBlocks VectorToSend = new VectorBlocks() { Blockchain = this, Blocks = BlocksToSend, Position = ReturnVector.RequestSendBlocksFromPosition };
-            VectorToNode(VectorToSend, Server, MachineName);
+            Converter.XmlToObject(ReturnXmlObject, typeof(VectorBlocks), out Obj);
+            ReturnVector = (VectorBlocks)Obj;
+            if (ReturnVector.Blockchain == null)
+              ReturnVector.Blockchain = Vector.Blockchain;
+            if (ReturnVector.RequestSendBlocksFromPosition != -1)
+            {
+              var BlocksToSend = GetBlocks(ReturnVector.RequestSendBlocksFromPosition, out ReadBlocksResult ReadBlocksResult);
+              VectorBlocks VectorToSend = new VectorBlocks() { Blockchain = this, Blocks = BlocksToSend, Position = ReturnVector.RequestSendBlocksFromPosition, ReadBlocksResult = ReadBlocksResult };
+              VectorToNode(VectorToSend, Server, MachineName);
+            }
+            else
+            {
+              Vector = new VectorBlocks(); //Used to repeat the operation in case of partial reception of blocks
+              UpdateLocalBlockchain(ReturnVector, Vector);
+            }
           }
           else
-            UpdateLocalBlockchain(ReturnVector);
+          {
+            ReturnObjectName = "String";
+            Converter.XmlToObject(ReturnXmlObject, typeof(string), out Obj);
+            string ErrorMessage = System.Convert.ToString(Obj);
+            Log("BlockchainError", 1000, ErrorMessage);
+          }
         }
-        else
-        {
-          ReturnObjectName = "String";
-          Converter.XmlToObject(ReturnXmlObject, typeof(string), out Obj);
-          string ErrorMessage = System.Convert.ToString(Obj);
-          Log("BlockchainError", 1000, ErrorMessage);
-        }
-      }
+      } while (ReturnVector != null && ReturnVector.ReadBlocksResult == ReadBlocksResult.Partial);
     }
+
     public void SyncBlockToNetwork(Block Block, long Position)
     {
       SyncBlocksToNetwork(new List<Block>() { Block }, Position);
@@ -212,7 +241,7 @@ namespace BlockchainManager
         if (CurrentLength > Vector.RequestSendBlocksFromPosition)
         {
           SetReturnVector.Blockchain = Blockchain;
-          SetReturnVector.Blocks = Blockchain.GetBlocks(Vector.RequestSendBlocksFromPosition);
+          SetReturnVector.Blocks = Blockchain.GetBlocks(Vector.RequestSendBlocksFromPosition, out SetReturnVector.ReadBlocksResult);
           SetReturnVector.Position = Vector.RequestSendBlocksFromPosition;
         }
         else if (CurrentLength < Vector.RequestSendBlocksFromPosition)
@@ -230,7 +259,7 @@ namespace BlockchainManager
           if (SetReturnVector != null)
           {
             SetReturnVector.Blockchain = Blockchain;
-            SetReturnVector.Blocks = Blockchain.GetBlocks(Vector.Position);
+            SetReturnVector.Blocks = Blockchain.GetBlocks(Vector.Position, out SetReturnVector.ReadBlocksResult);
             SetReturnVector.Position = Vector.Position;
           }
           else
@@ -248,6 +277,13 @@ namespace BlockchainManager
               // Error in blockchain
               return false;
           }
+          if (Vector.ReadBlocksResult == ReadBlocksResult.Partial)
+            //You have received only a partial part of blocks, you have to ask others who are missing
+            if (SetReturnVector != null)
+            {
+              SetReturnVector.Blockchain = Blockchain;
+              SetReturnVector.RequestSendBlocksFromPosition = Blockchain.Length();
+            }
         }
         else if (CurrentLength < Vector.Position)
         {
@@ -315,7 +351,7 @@ namespace BlockchainManager
         _Checksum = CalculateChecksum();
         if (!Blockchain.AcceptBodySignature)
         {
-          if (string.IsNullOrEmpty(Blockchain.PublicKey))
+          if (Blockchain.PublicKeys == null)
             AddToBlockchain();
         }
       }
@@ -332,9 +368,14 @@ namespace BlockchainManager
       {
         try
         {
-          System.Security.Cryptography.RSACryptoServiceProvider RSAalg = new System.Security.Cryptography.RSACryptoServiceProvider();
-          RSAalg.ImportCspBlob(Convert.FromBase64String(Blockchain.PublicKey));
-          return RSAalg.VerifyHash(CalculateChecksumBytes(), System.Security.Cryptography.CryptoConfig.MapNameToOID("SHA256"), ChecksumBytes);
+          foreach (var PublicKey in Blockchain.PublicKeys)
+          {
+            System.Security.Cryptography.RSACryptoServiceProvider RSAalg = new System.Security.Cryptography.RSACryptoServiceProvider();
+            RSAalg.ImportCspBlob(Convert.FromBase64String(PublicKey));
+            if (RSAalg.VerifyHash(CalculateChecksumBytes(), System.Security.Cryptography.CryptoConfig.MapNameToOID("SHA256"), ChecksumBytes)) ;
+            return true;
+          }
+          return false;
         }
         catch (Exception e)
         {
@@ -364,7 +405,7 @@ namespace BlockchainManager
       {
         if (CheckBodySignatures())
         {
-          if (!string.IsNullOrEmpty(Blockchain.PublicKey))
+          if (Blockchain.PublicKeys != null)
             return CheckBlockSignature();
           else
             return _Checksum == CalculateChecksum();
@@ -659,9 +700,21 @@ namespace BlockchainManager
       }
       return InvalidBlock;
     }
-    public List<Block> GetBlocks(long FromPosition)
+    public List<Block> GetBlocks(long FromPosition, out ReadBlocksResult Feedback)
     {
-      List<Block> List = new List<Block>();
+      var Blocks = new List<Block>();
+      Action<Block> Execute = delegate (Block Block)
+      {
+        Blocks.Add(Block);
+      };
+      Feedback = ReadBlocks(FromPosition, Execute, LenghtDataTrasmission);
+      return Blocks;
+    }
+
+    public ReadBlocksResult ReadBlocks(long FromPosition, Action<Block> Execute, long ExitAtLengthData = 0)
+    {
+      //List<Block> List = new List<Block>();
+      long LengthData = 0;
       Block LastBlock = GetPreviousBlock(FromPosition);
       if (System.IO.File.Exists(PathNameFile()))
       {
@@ -671,17 +724,26 @@ namespace BlockchainManager
           while (!Stream.EndOfStream)
           {
             string Record = Stream.ReadLine();
+            LengthData += Record.Length;
             Block Block = new Block(LastBlock, this, Record);
             if (!Block.IsValid())
               // Blockchain error!
-              break;
-            List.Add(Block);
+              return ReadBlocksResult.Error;
+            //List.Add(Block);
+            Execute(Block);
+            if (ExitAtLengthData != 0)
+              if (LengthData >= ExitAtLengthData)
+              {
+                return ReadBlocksResult.Partial;
+              }
             LastBlock = Block;
           }
         }
       }
-      return List;
+      return ReadBlocksResult.Completed;
+      //return List;
     }
+    public enum ReadBlocksResult { Completed, Partial, Error }
     internal bool AddBlock(Block Block)
     {
       if (Block.AddedToBlockchain)

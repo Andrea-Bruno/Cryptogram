@@ -25,7 +25,7 @@ namespace cryptogram.Core
     /// This function starts the messaging chat room
     /// </summary>
     /// <param name="PublicKeys">A string containing all the participants' public keys</param>
-    public static void CreateChatRoom(string PublicKeys)
+    public static void CreateChatRoom(string PublicKeys, Xamarin.Forms.StackLayout Container)
     {
       new System.Threading.Thread(() =>
       {
@@ -34,13 +34,13 @@ namespace cryptogram.Core
           PublicKeys += MyPublicKey;
         PublicKeys = PublicKeys.Replace("==", "== ");
         var Keys = PublicKeys.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-        CreateChatRool(new List<string>(Keys));
+        CreateChatRoom(new List<string>(Keys), Container);
       }).Start();
     }
 
     private static List<string> _Participants; //List in base64 format
     private static int RunningCreateChatRool = 0;
-    public static void CreateChatRool(List<string> Partecipants)
+    public static void CreateChatRoom(List<string> Partecipants, Xamarin.Forms.StackLayout Container)
     {
       RunningCreateChatRool += 1;
       if (RunningCreateChatRool == 1)
@@ -62,13 +62,14 @@ namespace cryptogram.Core
               return;
             }
           }
+          Messaging.Container = Container;
           Partecipants.Sort();
           _Participants = Partecipants;
           string PtsStr = string.Join(" ", _Participants.ToArray());
           System.Security.Cryptography.HashAlgorithm hashType = new System.Security.Cryptography.SHA256Managed();
           byte[] hashBytes = hashType.ComputeHash(Converter.StringToByteArray((PtsStr)));
           BlockChainName = Convert.ToBase64String(hashBytes);
-          Blockchain = new Blockchain("cryptogram", BlockChainName, Blockchain.BlockchainType.Binary, false, 8192);
+          Blockchain = new Blockchain("cryptogram", BlockChainName, Blockchain.BlockchainType.Binary, Blockchain.BlockSynchronization.SendToTheNetworkBuffer, false, 8192);
           var BlockchainLen = ReadBlockchain();
           new System.Threading.Thread(() =>
           {
@@ -83,63 +84,59 @@ namespace cryptogram.Core
 
     private static long ReadBlockchain(long FromPosizion = 0)
     {
-      var Blocks = Blockchain.GetBlocks(FromPosizion);
-      foreach (var Block in Blocks)
-      {
-        if (Block != null && Block.IsValid())
-        {
-          var DateAndTime = Block.Timestamp;
-          var BlockData = Block.DataByteArray;
-          byte Version = BlockData[0];
-          DataType Type = (DataType)BlockData[1];
-          var Password = DecryptPassword(BlockData, out int EncryptedDataPosition);
-          var Len = BlockData.Length - EncryptedDataPosition;
-          var EncryptedData = new byte[Len];
-          Buffer.BlockCopy(BlockData, EncryptedDataPosition, EncryptedData, 0, Len);
-          var DataElement = Cryptography.Decrypt(EncryptedData, Password);
-          int DataLen = DataElement.Length - 128;
-          byte[] Data = new byte[DataLen];
-          Buffer.BlockCopy(DataElement, 0, Data, 0, DataLen);
-          System.Security.Cryptography.HashAlgorithm hashType = new System.Security.Cryptography.SHA256Managed();
-          byte[] HashData = hashType.ComputeHash(Data);
-          byte[] SignatureOfData = new byte[128];
-          Buffer.BlockCopy(DataElement, DataLen, SignatureOfData, 0, 128);
-          // Find the author
-          string Author = null;
-          foreach (var Partecipant in _Participants)
-          {
-            System.Security.Cryptography.RSACryptoServiceProvider RSAalg = new System.Security.Cryptography.RSACryptoServiceProvider();
-            RSAalg.ImportCspBlob(Convert.FromBase64String(Partecipant));
-            if (RSAalg.VerifyHash(HashData, System.Security.Cryptography.CryptoConfig.MapNameToOID("SHA256"), SignatureOfData))
-            {
-              Author = Partecipant;
-              break;
-            }
-          }
-          //var SignatureOfData = GetMyRSA().SignHash(HashData, System.Security.Cryptography.CryptoConfig.MapNameToOID("SHA256"));
-          //var Signatures = Block.GetAllBodySignature();
-          //var Author = _Participants.Find(x => Signatures.ContainsKey(x));
-          if (Author == null)
-            System.Diagnostics.Debug.WriteLine("Block written by an impostor");
-          else
-          {
-            var IsMy = Author == GetMyPublicKey();
-            AddMessageView(DateAndTime, Type, Data, IsMy);
-          }
-        }
-      }
+      Blockchain.ReadBlocks(FromPosizion,ExecuteBlock);
       return Blockchain.Length();
     }
+    private static void ExecuteBlock(Blockchain.Block Block) {
+      if (Block != null && Block.IsValid())
+      {
+        var DateAndTime = Block.Timestamp;
+        var BlockData = Block.DataByteArray;
+        byte Version = BlockData[0];
+        DataType Type = (DataType)BlockData[1];
+        var Password = DecryptPassword(BlockData, out int EncryptedDataPosition);
+        var Len = BlockData.Length - EncryptedDataPosition;
+        var EncryptedData = new byte[Len];
+        Buffer.BlockCopy(BlockData, EncryptedDataPosition, EncryptedData, 0, Len);
+        var DataElement = Cryptography.Decrypt(EncryptedData, Password);
+        int DataLen = DataElement.Length - 128;
+        byte[] Data = new byte[DataLen];
+        Buffer.BlockCopy(DataElement, 0, Data, 0, DataLen);
+        System.Security.Cryptography.HashAlgorithm hashType = new System.Security.Cryptography.SHA256Managed();
+        byte[] HashData = hashType.ComputeHash(Data);
+        byte[] SignatureOfData = new byte[128];
+        Buffer.BlockCopy(DataElement, DataLen, SignatureOfData, 0, 128);
+        // Find the author
+        string Author = null;
+        foreach (var Partecipant in _Participants)
+        {
+          System.Security.Cryptography.RSACryptoServiceProvider RSAalg = new System.Security.Cryptography.RSACryptoServiceProvider();
+          RSAalg.ImportCspBlob(Convert.FromBase64String(Partecipant));
+          if (RSAalg.VerifyHash(HashData, System.Security.Cryptography.CryptoConfig.MapNameToOID("SHA256"), SignatureOfData))
+          {
+            Author = Partecipant;
+            break;
+          }
+        }
+        //var SignatureOfData = GetMyRSA().SignHash(HashData, System.Security.Cryptography.CryptoConfig.MapNameToOID("SHA256"));
+        //var Signatures = Block.GetAllBodySignature();
+        //var Author = _Participants.Find(x => Signatures.ContainsKey(x));
+        if (Author == null)
+          System.Diagnostics.Debug.WriteLine("Block written by an impostor");
+        else
+        {
+          var IsMy = Author == GetMyPublicKey();
+          AddMessageView(DateAndTime, Type, Data, IsMy);
+        }
+      }
+    }
 
+    private static Xamarin.Forms.StackLayout Container;
     private static void AddMessageView(DateTime Timestamp, DataType Type, Byte[] Data, bool IsMyMessage)
     {
-
       Xamarin.Forms.Device.BeginInvokeOnMainThread(delegate
       {
-
-
         var MessageLocalTime = Timestamp.ToLocalTime();
-        var Container = cryptogram.Views.ChatRoom.Messages;
         var PaddingLeft = 5; var PaddingRight = 5;
         Xamarin.Forms.Color Background;
         if (IsMyMessage)
@@ -282,7 +279,8 @@ namespace cryptogram.Core
     public static void SendText(string Text)
     {
       Sending += 1;
-      if (Sending==1){
+      if (Sending == 1)
+      {
         if (Text != null)
           Text = Text.Trim(" ".ToCharArray());
         if (!string.IsNullOrEmpty(Text))
@@ -420,16 +418,8 @@ namespace cryptogram.Core
       }
       public void Save()
       {
-        //UpdateView = true;
         AddContact(this);
       }
-      //private bool UpdateView;
-      //public bool IsUpdated()
-      //{
-      //  var UV = UpdateView;
-      //  UpdateView = false;
-      //  return UV;
-      //}
 
       public object Clone()
       {

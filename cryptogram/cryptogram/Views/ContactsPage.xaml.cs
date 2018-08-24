@@ -42,7 +42,7 @@ namespace cryptogram.Views
     {
       var item = args.Item as Core.Messaging.Contact;
       if (LastItemSelected == item)
-        await Navigation.PushAsync(new ChatRoom(new ItemDetailViewModel(item)));
+        await Navigation.PushAsync(new ChatRoom(new ItemDetailViewModel(Clone2Contect(item))));
       LastItemSelected = item;
     }
 
@@ -55,29 +55,23 @@ namespace cryptogram.Views
     {
       Core.Messaging.Contact item = (Core.Messaging.Contact)ItemsListView.SelectedItem;
       if (item != null)
-        await Navigation.PushAsync(new EditItemPage() { Contact = item });
+        await Navigation.PushAsync(new EditItemPage() { Contact = Clone2Contect(item) });
     }
 
-    private Color? Watermark;
     protected override void OnAppearing()
     {
       base.OnAppearing();
       LastItemSelected = null;
-      if (string.IsNullOrEmpty(Find.Text))
-      {
-        Watermark = Find.TextColor;
-        Find.TextColor = Color.FromRgba(128, 128, 128, 128);
-        Find.Text = cryptogram.Resources.Dictionary.Search;
-      };
       //Device.BeginInvokeOnMainThread(delegate
       //{
       //  ItemsListView.ItemsSource = Core.Messaging.GetContacts();
       //});
+      Find_Unfocused(null, null);
       PopulateList(Core.Messaging.GetContacts());
     }
 
-    static Dictionary<Core.Messaging.Contact, Core.Messaging.Contact> ListC = new Dictionary<Core.Messaging.Contact, Core.Messaging.Contact>();
-    static public System.Collections.ObjectModel.ObservableCollection<Core.Messaging.Contact> List = new System.Collections.ObjectModel.ObservableCollection<Core.Messaging.Contact>();
+    static Dictionary<Core.Messaging.Contact, Core.Messaging.Contact> List = new Dictionary<Core.Messaging.Contact, Core.Messaging.Contact>();
+    //static public System.Collections.ObjectModel.ObservableCollection<Core.Messaging.Contact> List = new System.Collections.ObjectModel.ObservableCollection<Core.Messaging.Contact>();
     public void PopulateList(Core.Messaging.Contact[] Contacts)
     {
       ItemsListView.SelectedItem = null;
@@ -95,32 +89,42 @@ namespace cryptogram.Views
 
       ItemsListView.BeginRefresh();
       var ToRemove = new List<Core.Messaging.Contact>();
-      foreach (var X in ListC.Keys)
+      foreach (var I in List)
       {
-        if (!Contacts.Contains(X))
-          ToRemove.Add(X);
+        if (!Contacts.Contains(I.Value))
+          ToRemove.Add(I.Key);
       }
-      ToRemove.ForEach(X => { ListC.Remove(X); });
+      ToRemove.ForEach(X => { List.Remove(X); });
 
       foreach (var X in Contacts)
       {
-        if (!ListC.Keys.Contains(X))
-          ListC.Add(X, (Core.Messaging.Contact)X.Clone());
+        if (!List.Values.Contains(X))
+          List.Add((Core.Messaging.Contact)X.Clone(), X);
       }
       ItemsListView.ItemsSource = null; // Se non lo annullo e lo reimposto non funziona su Android
 
-      var Values = ListC.Values;
+      var Values = List.Keys;
       var Sorted = Values.OrderBy(o => o.Name).ToList();
       ItemsListView.ItemsSource = Sorted;
       ItemsListView.EndRefresh();
     }
 
+    private Core.Messaging.Contact Clone2Contect(Core.Messaging.Contact CloneContact)
+    {
+      return List[CloneContact];
+      //return List.ToArray().First(x => x.Value == CloneContact).Key;
+    }
+
+    private Color? Watermark;
     private void Find_TextChanged(object sender, TextChangedEventArgs e)
     {
-      var txt = Find.Text.ToLower();
-      var Contacts = Core.Messaging.GetContacts();
-      var Findes = Contacts.ToList().FindAll(X => X.Name.ToLower().Contains(txt));
-      PopulateList(Findes.ToArray());
+      if (Watermark == null)
+      {
+        var txt = Find.Text.ToLower();
+        var Contacts = Core.Messaging.GetContacts();
+        var Findes = Contacts.ToList().FindAll(X => X.Name.ToLower().Contains(txt));
+        PopulateList(Findes.ToArray());
+      }
     }
 
     private void Find_Focused(object sender, FocusEventArgs e)
@@ -128,8 +132,18 @@ namespace cryptogram.Views
       if (Watermark != null)
       {
         Find.TextColor = (Color)Watermark;
-        Watermark = null;
         Find.Text = "";
+        Watermark = null;
+      }
+    }
+
+    private void Find_Unfocused(object sender, FocusEventArgs e)
+    {
+      if (string.IsNullOrEmpty(Find.Text))
+      {
+        Watermark = Find.TextColor;
+        Find.TextColor = Color.FromRgba(128, 128, 128, 128);
+        Find.Text = cryptogram.Resources.Dictionary.Search;
       }
     }
   }

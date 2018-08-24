@@ -14,13 +14,12 @@ namespace cryptogram.Views
     public ChatRoom(ItemDetailViewModel viewModel)
     {
       InitializeComponent();
-      Messages = this.FindByName<StackLayout>("MessageList");
       BindingContext = this.viewModel = viewModel;
       TextMessage.Focus();
 
       Device.BeginInvokeOnMainThread(delegate
       {
-        Core.Messaging.CreateChatRoom(viewModel.Item.PublicKey);
+        Core.Messaging.CreateChatRoom(viewModel.Item.PublicKey, MessageList);
       });
 
 
@@ -29,23 +28,18 @@ namespace cryptogram.Views
       //          };
     }
 
-    public static StackLayout Messages;
+    //public static StackLayout Messages;
 
     public ChatRoom()
     {
       InitializeComponent();
-
       var item = new Core.Messaging.Contact
       {
         Name = "",
         PublicKey = ""
       };
-
       viewModel = new ItemDetailViewModel(item);
       BindingContext = viewModel;
-
-
-      Core.Functions.Alert("prova");
     }
 
     private void Send_Clicked(object sender, EventArgs e)
@@ -68,9 +62,28 @@ namespace cryptogram.Views
         Item.Save();
     }
 
-    private Color? Watermark;
     private string _NameContact;
     private void ContentPage_Appearing(object sender, EventArgs e)
+    {
+      TextMessage_Unfocused(null, null);
+      var Item = viewModel.Item;
+      _NameContact = Item.Name;
+    }
+
+    private Color? Watermark;
+    private void TextMessage_Focused(object sender, FocusEventArgs e)
+    {
+      if (Watermark != null)
+      {
+        TextMessage.TextColor = (Color)Watermark;
+        TextMessage.IsSpellCheckEnabled = true;
+        TextMessage.Text = "";
+        Watermark = null;
+      }
+
+    }
+
+    private void TextMessage_Unfocused(object sender, FocusEventArgs e)
     {
       if (string.IsNullOrEmpty(TextMessage.Text))
       {
@@ -79,20 +92,6 @@ namespace cryptogram.Views
         TextMessage.IsSpellCheckEnabled = false;
         TextMessage.Text = cryptogram.Resources.Dictionary.strictlyConfidentialMessage + ": «We are anonymous!»";
       };
-      var Item = viewModel.Item;
-      _NameContact = Item.Name;
-    }
-
-    private void TextMessage_Focused(object sender, FocusEventArgs e)
-    {
-      if (Watermark != null)
-      {
-        TextMessage.TextColor = (Color)Watermark;
-        Watermark = null;
-        TextMessage.Text = "";
-        TextMessage.IsSpellCheckEnabled = false;
-      }
-
     }
   }
 }

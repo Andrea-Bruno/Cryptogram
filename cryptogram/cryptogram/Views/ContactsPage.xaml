@@ -51,7 +51,7 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-            <Entry x:Name="Find" Text="{Binding Item.Name}" FontSize="Small" TextChanged="Find_TextChanged" Focused="Find_Focused" IsSpellCheckEnabled="False" />
+            <Entry x:Name="Find" Text="{Binding Item.Name}" FontSize="Small" TextChanged="Find_TextChanged" Focused="Find_Focused" Unfocused="Find_Unfocused" IsSpellCheckEnabled="False" />
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

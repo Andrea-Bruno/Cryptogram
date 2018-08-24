@@ -8,7 +8,7 @@ namespace cryptogram
 {
   public partial class App : Application
   {
-
+    public static int Version;
     public App()
     {
       InitializeComponent();

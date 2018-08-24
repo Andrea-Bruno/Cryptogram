@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using BlockchainManager;
 
 namespace BlockchainManager
 {
@@ -11,7 +12,7 @@ namespace BlockchainManager
     {
       // Simple blockchain
 
-      Blockchain Blocks = new Blockchain("Webmaster", "Phrases", Blockchain.BlockchainType.Binary, false);
+      Blockchain Blocks = new Blockchain("Webmaster", "Phrases", Blockchain.BlockchainType.Binary, Blockchain.BlockSynchronization.AddInLocalAndSync, false);
       var Test = Blocks.Validate();
       Blockchain.Block Block1 = new Blockchain.Block(Blocks, "Hi my friends, I have a message for you");
       Blockchain.Block Block2 = new Blockchain.Block(Blocks, "This is a message number 2");
@@ -30,7 +31,7 @@ namespace BlockchainManager
       System.Security.Cryptography.RSACryptoServiceProvider RSA2 = new System.Security.Cryptography.RSACryptoServiceProvider();
       var PublicKey2Base64 = Convert.ToBase64String(RSA2.ExportCspBlob(false));
 
-      Blockchain Blocks = new Blockchain("Webmaster", "Phrases", Blockchain.BlockchainType.Binary, true);
+      Blockchain Blocks = new Blockchain("Webmaster", "Phrases", Blockchain.BlockchainType.Binary, Blockchain.BlockSynchronization.AddInLocalAndSync, true);
       var Test = Blocks.Validate();
       byte[] Signature;
       bool IsValid;
@@ -65,7 +66,7 @@ namespace BlockchainManager
       var PublicKeyBase64 = Convert.ToBase64String(RSA.ExportCspBlob(false));
       var PrivateKeyBase64 = Convert.ToBase64String(RSA.ExportCspBlob(true));
 
-      Blockchain Blocks = new Blockchain(PublicKeyBase64, "Webmaster", "Phrases", Blockchain.BlockchainType.Binary, false);
+      Blockchain Blocks = new Blockchain(PublicKeyBase64, "Webmaster", "Phrases", Blockchain.BlockchainType.Binary, Blockchain.BlockSynchronization.AddInLocalAndSync, false);
       byte[] Signature;
       bool IsValid;
 
@@ -92,7 +93,7 @@ namespace BlockchainManager
       System.Security.Cryptography.RSACryptoServiceProvider RSA = new System.Security.Cryptography.RSACryptoServiceProvider();
       var PublicKeyBase64 = Convert.ToBase64String(RSA.ExportCspBlob(false));
 
-      Blockchain Blocks = new Blockchain(PublicKeyBase64, "Webmaster", "Phrases", Blockchain.BlockchainType.Binary, true);
+      Blockchain Blocks = new Blockchain(PublicKeyBase64, "Webmaster", "Phrases", Blockchain.BlockchainType.Binary, Blockchain.BlockSynchronization.AddInLocalAndSync, true);
       var Test = Blocks.Validate();
       byte[] Signature;
       bool IsValid;

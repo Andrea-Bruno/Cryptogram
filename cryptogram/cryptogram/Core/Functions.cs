@@ -9,10 +9,9 @@ namespace cryptogram.Core
 
     public static void Alert(string Message)
     {
-//#if __ANDROID__
-
-//      Xamarin.Forms.Device.OpenUri(new Uri("mailto:?to=&subject=Alert&body=" + Message));
-//#else
+#if __ANDROID__
+      Xamarin.Forms.Device.OpenUri(new Uri("mailto:?to=&subject=Alert&body=" + Message));
+#else
       Xamarin.Forms.Device.BeginInvokeOnMainThread(delegate
       {
         Xamarin.Forms.Page currPage;
@@ -23,7 +22,7 @@ namespace cryptogram.Core
           currPage.DisplayAlert(Resources.Dictionary.Alert, Message, Resources.Dictionary.Ok);
         }
       });
-//#endif
+#endif
     }
 
 
@@ -39,8 +38,5 @@ namespace cryptogram.Core
         return false;
       }
     }
-
-
-
   }
 }

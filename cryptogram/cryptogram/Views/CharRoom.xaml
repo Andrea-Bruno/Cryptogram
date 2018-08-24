@@ -14,7 +14,7 @@
         </ScrollView>
         <StackLayout VerticalOptions="End">
             <Button Text="{x:Static local:Dictionary.Send}" Clicked="Send_Clicked" ></Button>
-            <Editor x:Name="TextMessage" FontSize="Medium" AutoSize="TextChanges" Focused="TextMessage_Focused" ></Editor>
+            <Editor x:Name="TextMessage" FontSize="Medium" AutoSize="TextChanges" Focused="TextMessage_Focused" Unfocused="TextMessage_Unfocused" ></Editor>
         </StackLayout>
     </StackLayout>
 </ContentPage>
