@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -6,6 +7,20 @@ namespace BlockchainManager
 {
   public static class Network
   {
+    public static void Initialize()
+    {
+      var Nodes = GetNetworkNodes();
+      if (Nodes != null)
+        Setup.Network.NodeList = Nodes;
+    }
+
+    private static bool _IsOnline;
+    public static bool IsOnline
+    {
+      get { return _IsOnline; }
+    }
+
+
     public static string SendObjectSync(object Obj, string WebAddress = null, System.Collections.Specialized.NameValueCollection Dictionary = null, string ToUser = null, int SecTimeOut = 0, int SecWaitAnswer = 0, OnReceivedObject ExecuteOnReceivedObject = null, Action ExecuteIfNoAnswer = null, bool CancellAllMyRequest = false, bool RemoveObjectsToMe = false, bool RemoveMyObjects = false)
     {
       var Reader = ExecuteServerRequest(false, WebAddress, ExecuteOnReceivedObject, SecWaitAnswer, ExecuteIfNoAnswer, Obj, Dictionary, SecTimeOut, ToUser, CancellAllMyRequest, RemoveObjectsToMe, RemoveMyObjects);
@@ -72,12 +87,10 @@ namespace BlockchainManager
 
       return ReadWeb(Async, WebAddress, Parser, null, Dictionary, SecWaitAnswer, ExecuteIfNoAnswer);
     }
-
     public static WebReader ReadWeb(bool Async, string Url, Action<string> Parser, Action Elapse, System.Collections.Specialized.NameValueCollection Dictionary = null, int SecTimeout = 0, Action ExecuteAtTimeout = null)
     {
       return new WebReader(Async, Url, Parser, Elapse, Dictionary, SecTimeout, ExecuteAtTimeout);
     }
-
     public class WebReader
     {
       public WebReader(bool Async, string Url, Action<string> Parser, Action Elapse, System.Collections.Specialized.NameValueCollection Dictionary = null, int SecTimeout = 0, Action ExecuteAtTimeout = null)
@@ -260,7 +273,6 @@ namespace BlockchainManager
           Elapse();
       }
     }
-
     public class ObjectVector
     {
       public ObjectVector()
@@ -287,6 +299,48 @@ namespace BlockchainManager
       public string ObjectName;
       public string XmlObject;
     }
+    public class Node
+    {
+      public string Server;
+      public string MachineName;
+      public string PublicKey;
+    }
+    public enum Request { NetworkNodes }
+
+    public static Node[] GetNetworkNodes()
+    {
+      int Try = 0;
+      string XmlResult;
+      do
+      {
+        Try += 1;
+        var Node = GetRandomNode();
+        XmlResult = SendObjectSync(null, Node.Server, null, Node.MachineName + ".!" + Request.NetworkNodes.ToString());
+      } while (string.IsNullOrEmpty(XmlResult) && Try <= 10);
+      Node[] Nodes = null;
+      if (Try > 10)
+        _IsOnline = false;
+      else
+        _IsOnline = true;
+      if (!string.IsNullOrEmpty(XmlResult))
+      {
+        object ReturmObj;
+        Converter.XmlToObject(XmlResult, typeof(Node[]), out ReturmObj);
+        Nodes = (Node[])ReturmObj;
+      }
+      return Nodes;
+    }
+
+    public static Node GetRandomNode()
+    {
+      lock (Setup.Network.NodeList)
+      {
+        if (Setup.Network.NodeList.Length > 0)
+          return Setup.Network.NodeList[new Random().Next(Setup.Network.NodeList.Length)];
+      }
+      return null;
+    }
+
 
   }
 

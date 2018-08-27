@@ -13,6 +13,7 @@ namespace cryptogram
     {
       InitializeComponent();
       MainPage = new MainPage();
+      BlockchainManager.Network.Initialize();
     }
 
     protected override void OnStart()

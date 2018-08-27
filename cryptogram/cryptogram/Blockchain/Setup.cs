@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
+
 namespace BlockchainManager
 {
   public static class Setup
@@ -12,22 +13,16 @@ namespace BlockchainManager
       public NetworkConfiguration()
       {
 #if DEBUG
-        NodeList = new Node[1] { new Node() { Server = "http://www.bitboxlab.com", MachineName = "ANDREA", PublicKey = "" } };
-        //NodeList = new Node[1] { new Node() { Server = "http://localhost:8080", MachineName = "ANDREA", PublicKey = "" } };
+        //NodeList = new Network.Node[1] { new Network.Node() { Server = "http://www.bitboxlab.com", MachineName = "ANDREA", PublicKey = "" } };
+        NodeList = new Network.Node[1] { new Network.Node() { Server = "http://localhost:8080", MachineName = "ANDREA", PublicKey = "" } };
 #else
-        NodeList = new Node[1] { new Node() { Server = "http://www.bitboxlab.com", MachineName = "ANDREA", PublicKey = "" } };
+        NodeList = new Network.Node[1] { new Network.Node() { Server = "http://www.bitboxlab.com", MachineName = "ANDREA", PublicKey = "" } };
 #endif
       }
       public string MachineName = Environment.MachineName;
       public string MasterServer;
       public string MasterServerMachineName;
-      public Node[] NodeList;
-      public class Node
-      {
-        public string Server;
-        public string MachineName;
-        public string PublicKey;
-      }
+      public Network.Node[] NodeList;
     }
     public static class Ambient
     {

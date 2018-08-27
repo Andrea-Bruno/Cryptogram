@@ -12,22 +12,24 @@ namespace BlockchainManager
     public Blockchain()
     {
     }
-    public Blockchain(string PublicKey, string Group, string Name, BlockchainType Type, BlockSynchronization HowTheBlocksAreLatched, bool AcceptBodySignature, int MaxBlockLenght = 2048)
+    public Blockchain(string[] PublicKeys, string Group, string Name, BlockchainType Type, BlockSynchronization HowTheBlocksAreLatched, bool AcceptBodySignature, int MaxBlockLenght = 2048, double DaysExpiredAfterInactivity = 30)
     {
-      this.PublicKey = PublicKey;
+      this.PublicKeys = PublicKeys;
       this.Group = Group;
       this.Name = Name;
       this.Type = Type;
       this.AcceptBodySignature = AcceptBodySignature;
       this.MaxBlockLenght = MaxBlockLenght;
+      this.ExpiredAfterInactivity = TimeSpan.FromDays(DaysExpiredAfterInactivity);
     }
-    public Blockchain(string Group, string Name, BlockchainType Type, BlockSynchronization HowTheBlocksAreLatched, bool AcceptBodySignature, int MaxBlockLenght = 2048)
+    public Blockchain(string Group, string Name, BlockchainType Type, BlockSynchronization HowTheBlocksAreLatched, bool AcceptBodySignature, int MaxBlockLenght = 2048, double DaysExpiredAfterInactivity = 30)
     {
       this.Group = Group;
       this.Name = Name;
       this.Type = Type;
       this.AcceptBodySignature = AcceptBodySignature;
       this.MaxBlockLenght = MaxBlockLenght;
+      this.ExpiredAfterInactivity = TimeSpan.FromDays(DaysExpiredAfterInactivity);
     }
     public void Save()
     {
@@ -206,11 +208,28 @@ namespace BlockchainManager
         }
       } while (ReturnVector != null && ReturnVector.ReadBlocksResult == ReadBlocksResult.Partial);
     }
-
+    public void SendBlockToNetwork(Block Block)
+    {
+      SyncBlocksToNetwork(new List<Block>() { Block }, -1);
+    }
+    public void SendBlocksToNetwork(List<Block> Blocks)
+    {
+      SyncBlocksToNetwork(Blocks, -1);
+    }
+    /// <summary>
+    /// Synchronize a block written locally and transmit it to the nodes of the network
+    /// </summary>
+    /// <param name="Block">The block</param>
+    /// <param name="Position">Base 0 position</param>
     public void SyncBlockToNetwork(Block Block, long Position)
     {
       SyncBlocksToNetwork(new List<Block>() { Block }, Position);
     }
+    /// <summary>
+    /// Synchronize the blocks written locally and transmit it to the nodes of the network
+    /// </summary>
+    /// <param name="Blocks">The blocks</param>
+    /// <param name="Position">Base 0 position</param>
     public void SyncBlocksToNetwork(List<Block> Blocks, long Position)
     {
       VectorBlocks Vector = new VectorBlocks() { Blockchain = this, Blocks = Blocks, Position = Position };
@@ -302,6 +321,13 @@ namespace BlockchainManager
       private Block()
       {
       }
+      /// <summary>
+      /// Instantiate a block from a record of data written on the blockchain.
+      /// It is used to read the blockchain.
+      /// </summary>
+      /// <param name="PreviousBlock">The previous block</param>
+      /// <param name="Blockchain">The blockchain</param>
+      /// <param name="Record">The record is the entire data package that represents the block, includes the possible signature and checksum</param>
       public Block(Block PreviousBlock, Blockchain Blockchain, string Record)
       {
         this.PreviousBlock = PreviousBlock;
@@ -347,12 +373,19 @@ namespace BlockchainManager
         this.Blockchain = Blockchain;
         this._Data = Data;
         _Timestamp = DateTime.Now.ToUniversalTime();
-        PreviousBlock = Blockchain.GetLastBlock();
-        _Checksum = CalculateChecksum();
-        if (!Blockchain.AcceptBodySignature)
+        if (Blockchain.HowTheBlocksAreLatched == BlockSynchronization.AddInLocalAndSync)
         {
-          if (Blockchain.PublicKeys == null)
-            AddToBlockchain();
+          PreviousBlock = Blockchain.GetLastBlock();
+          _Checksum = CalculateChecksum();
+          if (!Blockchain.AcceptBodySignature)
+          {
+            if (Blockchain.PublicKeys == null)
+              AddToBlockchain();
+          }
+        }
+        else
+        {
+          Blockchain.SendBlockToNetwork(this);
         }
       }
       private Block PreviousBlock;

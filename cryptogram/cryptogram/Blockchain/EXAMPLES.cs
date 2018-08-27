@@ -66,7 +66,7 @@ namespace BlockchainManager
       var PublicKeyBase64 = Convert.ToBase64String(RSA.ExportCspBlob(false));
       var PrivateKeyBase64 = Convert.ToBase64String(RSA.ExportCspBlob(true));
 
-      Blockchain Blocks = new Blockchain(PublicKeyBase64, "Webmaster", "Phrases", Blockchain.BlockchainType.Binary, Blockchain.BlockSynchronization.AddInLocalAndSync, false);
+      Blockchain Blocks = new Blockchain(new string[] { PublicKeyBase64 }, "Webmaster", "Phrases", Blockchain.BlockchainType.Binary, Blockchain.BlockSynchronization.AddInLocalAndSync, false);
       byte[] Signature;
       bool IsValid;
 
@@ -93,7 +93,7 @@ namespace BlockchainManager
       System.Security.Cryptography.RSACryptoServiceProvider RSA = new System.Security.Cryptography.RSACryptoServiceProvider();
       var PublicKeyBase64 = Convert.ToBase64String(RSA.ExportCspBlob(false));
 
-      Blockchain Blocks = new Blockchain(PublicKeyBase64, "Webmaster", "Phrases", Blockchain.BlockchainType.Binary, Blockchain.BlockSynchronization.AddInLocalAndSync, true);
+      Blockchain Blocks = new Blockchain(new string[] { PublicKeyBase64 }, "Webmaster", "Phrases", Blockchain.BlockchainType.Binary, Blockchain.BlockSynchronization.AddInLocalAndSync, true);
       var Test = Blocks.Validate();
       byte[] Signature;
       bool IsValid;
