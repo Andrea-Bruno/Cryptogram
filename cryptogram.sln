@@ -4,12 +4,23 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.27703.2035
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cryptogram.Android", "cryptogram\cryptogram.Android\cryptogram.Android.csproj", "{8A1DFD60-B7FC-456C-92B0-92A75DEC160E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FB7D1998-404D-48D8-956B-D5B3A06A365E} = {FB7D1998-404D-48D8-956B-D5B3A06A365E}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cryptogram.iOS", "cryptogram\cryptogram.iOS\cryptogram.iOS.csproj", "{795FE44C-AF98-4EFA-92BB-0FF2808870BD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FB7D1998-404D-48D8-956B-D5B3A06A365E} = {FB7D1998-404D-48D8-956B-D5B3A06A365E}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cryptogram.UWP", "cryptogram\cryptogram.UWP\cryptogram.UWP.csproj", "{DEBC0150-525A-4BA5-B500-D0E2C0C49FAA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FB7D1998-404D-48D8-956B-D5B3A06A365E} = {FB7D1998-404D-48D8-956B-D5B3A06A365E}
+	EndProjectSection
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "cryptogram", "cryptogram\cryptogram\cryptogram.shproj", "{4A429AEB-0367-467C-97EB-C2BB0075A900}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlockchainManager", "..\BlockchainManager\BlockchainManager\BlockchainManager.csproj", "{FB7D1998-404D-48D8-956B-D5B3A06A365E}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -141,6 +152,30 @@ Global
 		{DEBC0150-525A-4BA5-B500-D0E2C0C49FAA}.Release|x86.ActiveCfg = Release|x86
 		{DEBC0150-525A-4BA5-B500-D0E2C0C49FAA}.Release|x86.Build.0 = Release|x86
 		{DEBC0150-525A-4BA5-B500-D0E2C0C49FAA}.Release|x86.Deploy.0 = Release|x86
+		{FB7D1998-404D-48D8-956B-D5B3A06A365E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB7D1998-404D-48D8-956B-D5B3A06A365E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB7D1998-404D-48D8-956B-D5B3A06A365E}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{FB7D1998-404D-48D8-956B-D5B3A06A365E}.Debug|ARM.Build.0 = Debug|Any CPU
+		{FB7D1998-404D-48D8-956B-D5B3A06A365E}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{FB7D1998-404D-48D8-956B-D5B3A06A365E}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{FB7D1998-404D-48D8-956B-D5B3A06A365E}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{FB7D1998-404D-48D8-956B-D5B3A06A365E}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{FB7D1998-404D-48D8-956B-D5B3A06A365E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FB7D1998-404D-48D8-956B-D5B3A06A365E}.Debug|x64.Build.0 = Debug|Any CPU
+		{FB7D1998-404D-48D8-956B-D5B3A06A365E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FB7D1998-404D-48D8-956B-D5B3A06A365E}.Debug|x86.Build.0 = Debug|Any CPU
+		{FB7D1998-404D-48D8-956B-D5B3A06A365E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB7D1998-404D-48D8-956B-D5B3A06A365E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB7D1998-404D-48D8-956B-D5B3A06A365E}.Release|ARM.ActiveCfg = Release|Any CPU
+		{FB7D1998-404D-48D8-956B-D5B3A06A365E}.Release|ARM.Build.0 = Release|Any CPU
+		{FB7D1998-404D-48D8-956B-D5B3A06A365E}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{FB7D1998-404D-48D8-956B-D5B3A06A365E}.Release|iPhone.Build.0 = Release|Any CPU
+		{FB7D1998-404D-48D8-956B-D5B3A06A365E}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{FB7D1998-404D-48D8-956B-D5B3A06A365E}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{FB7D1998-404D-48D8-956B-D5B3A06A365E}.Release|x64.ActiveCfg = Release|Any CPU
+		{FB7D1998-404D-48D8-956B-D5B3A06A365E}.Release|x64.Build.0 = Release|Any CPU
+		{FB7D1998-404D-48D8-956B-D5B3A06A365E}.Release|x86.ActiveCfg = Release|Any CPU
+		{FB7D1998-404D-48D8-956B-D5B3A06A365E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
