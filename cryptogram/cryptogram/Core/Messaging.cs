@@ -1,8 +1,9 @@
-﻿using System;
+﻿
+using BlockchainManager;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using BlockchainManager;
 
 // C:\Users\Andrea\AppData\Local\Packages\0aecfc2f-ac07-4958-873b-e4079421c833_805bqyqnptpj0\LocalState\blockchains\cryptogram
 
@@ -67,7 +68,7 @@ namespace cryptogram.Core
           _Participants = Partecipants;
           string PtsStr = string.Join(" ", _Participants.ToArray());
           System.Security.Cryptography.HashAlgorithm hashType = new System.Security.Cryptography.SHA256Managed();
-          byte[] hashBytes = hashType.ComputeHash(Converter.StringToByteArray((PtsStr)));
+          byte[] hashBytes = hashType.ComputeHash(Encoding.GetEncoding("utf-16LE").GetBytes(PtsStr));
           BlockChainName = Convert.ToBase64String(hashBytes);
           Blockchain = new Blockchain("cryptogram", BlockChainName, Blockchain.BlockchainType.Binary, Blockchain.BlockSynchronization.SendToTheNetworkBuffer, false, 8192);
           var BlockchainLen = ReadBlockchain();

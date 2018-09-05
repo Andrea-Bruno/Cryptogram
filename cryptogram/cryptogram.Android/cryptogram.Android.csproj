@@ -97,6 +97,12 @@
     <Folder Include="Resources\drawable-xxhdpi\" />
     <Folder Include="Resources\drawable-xxxhdpi\" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\BlockchainManager\BlockchainManager\BlockchainManager.csproj">
+      <Project>{C6219C0F-2876-4428-BE83-4F0A47BD9AF5}</Project>
+      <Name>BlockchainManager</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="..\cryptogram\cryptogram.projitems" Label="Shared" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
 </Project>

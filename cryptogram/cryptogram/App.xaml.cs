@@ -13,7 +13,17 @@ namespace cryptogram
     {
       InitializeComponent();
       MainPage = new MainPage();
-      BlockchainManager.Network.Initialize();
+      var EntryPoints = new System.Collections.Generic.List<string>();
+#if DEBUG
+      var NetworkName = "testnet";
+      //EntryPoints.Add("http://www.bitboxlab.com");
+      EntryPoints.Add("http://localhost:55007");
+#else
+      var NetworkName = "cryptogram";
+      EntryPoints.Add("http://www.bitboxlab.com");
+#endif
+      BlockchainManager.Blockchain.Initialize( EntryPoints, NetworkName);
+      //NetworkExtension.Network.Initialize();
     }
 
     protected override void OnStart()

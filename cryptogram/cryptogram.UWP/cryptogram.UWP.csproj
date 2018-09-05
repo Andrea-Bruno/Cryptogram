@@ -154,7 +154,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\BlockchainManager\BlockchainManager\BlockchainManager.csproj">
-      <Project>{FB7D1998-404D-48D8-956B-D5B3A06A365E}</Project>
+      <Project>{c6219c0f-2876-4428-be83-4f0a47bd9af5}</Project>
       <Name>BlockchainManager</Name>
     </ProjectReference>
   </ItemGroup>
