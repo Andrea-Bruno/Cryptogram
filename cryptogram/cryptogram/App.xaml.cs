@@ -13,16 +13,15 @@ namespace cryptogram
     {
       InitializeComponent();
       MainPage = new MainPage();
-      var EntryPoints = new System.Collections.Generic.List<string>();
+      var EntryPoints = new System.Collections.Generic.Dictionary<String, String>();
 #if DEBUG
       var NetworkName = "testnet";
-      //EntryPoints.Add("http://www.bitboxlab.com");
-      EntryPoints.Add("http://localhost:55007");
+      EntryPoints.Add(Environment.MachineName, "http://localhost:55007");
 #else
-      var NetworkName = "cryptogram";
-      EntryPoints.Add("http://www.bitboxlab.com");
+      var NetworkName = "ANDREA";
+      EntryPoints.Add(Environment.MachineName, "http://www.bitboxlab.com");
 #endif
-      BlockchainManager.Blockchain.Initialize( EntryPoints, NetworkName);
+      BlockchainManager.HookToNetwork.Initialize(null, EntryPoints, NetworkName);
       //NetworkExtension.Network.Initialize();
     }
 
