@@ -98,9 +98,9 @@
     <Folder Include="Resources\drawable-xxxhdpi\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\BlockchainManager\BlockchainManager\BlockchainManager.csproj">
-      <Project>{C6219C0F-2876-4428-BE83-4F0A47BD9AF5}</Project>
-      <Name>BlockchainManager</Name>
+    <ProjectReference Include="..\..\..\CryptogramLibrary\CryptogramLibrary\CryptogramLibrary.csproj">
+      <Project>{1e0b6bd3-4f04-4019-86c2-8264291f152f}</Project>
+      <Name>CryptogramLibrary</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="..\cryptogram\cryptogram.projitems" Label="Shared" />

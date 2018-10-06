@@ -134,9 +134,9 @@
     <PackageReference Include="Xamarin.Forms" Version="3.1.0.697729" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\BlockchainManager\BlockchainManager\BlockchainManager.csproj">
-      <Project>{c6219c0f-2876-4428-be83-4f0a47bd9af5}</Project>
-      <Name>BlockchainManager</Name>
+    <ProjectReference Include="..\..\..\CryptogramLibrary\CryptogramLibrary\CryptogramLibrary.csproj">
+      <Project>{1e0b6bd3-4f04-4019-86c2-8264291f152f}</Project>
+      <Name>CryptogramLibrary</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />

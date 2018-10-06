@@ -2,8 +2,8 @@
 {
   public class ItemDetailViewModel : BaseViewModel
   {
-    public Core.Messaging.Contact Item { get; set; }
-    public ItemDetailViewModel(Core.Messaging.Contact item = null)
+    public CryptogramLibrary.Messaging.Contact Item { get; set; }
+    public ItemDetailViewModel(CryptogramLibrary.Messaging.Contact item = null)
     {
       Title = item?.Name;
       Item = item;

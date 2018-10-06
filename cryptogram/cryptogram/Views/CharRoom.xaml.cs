@@ -14,12 +14,13 @@ namespace cryptogram.Views
     public ChatRoom(ItemDetailViewModel viewModel)
     {
       InitializeComponent();
+      Messages = MessageList;
       BindingContext = this.viewModel = viewModel;
       TextMessage.Focus();
-
+    
       Device.BeginInvokeOnMainThread(delegate
       {
-        Core.Messaging.CreateChatRoom(viewModel.Item.PublicKey, MessageList);
+        CryptogramLibrary.Messaging.CreateChatRoom(viewModel.Item.PublicKey);
       });
 
 
@@ -27,13 +28,12 @@ namespace cryptogram.Views
       //          {
       //          };
     }
-
-    //public static StackLayout Messages;
+    public static StackLayout Messages;
 
     public ChatRoom()
     {
       InitializeComponent();
-      var item = new Core.Messaging.Contact
+      var item = new CryptogramLibrary.Messaging.Contact
       {
         Name = "",
         PublicKey = ""
@@ -44,14 +44,14 @@ namespace cryptogram.Views
 
     private void Send_Clicked(object sender, EventArgs e)
     {
-      Core.Messaging.SendText(TextMessage.Text);
+      CryptogramLibrary.Messaging.SendText(TextMessage.Text);
       TextMessage.Text = "";
     }
 
     async void Remove_Clicked(object sender, EventArgs e)
     {
       var Item = viewModel.Item;
-      Core.Messaging.RemoveContact(Item);
+      CryptogramLibrary.Messaging.RemoveContact(Item);
       await Navigation.PopAsync();
     }
 

@@ -23,7 +23,7 @@ namespace cryptogram.Views
 
     }
 
-    private Core.Messaging.Contact LastItemSelected;
+    private CryptogramLibrary.Messaging.Contact LastItemSelected;
     async void OnItemSelected(object sender, SelectedItemChangedEventArgs args)
     {
       //var item = args.SelectedItem as Item;
@@ -40,7 +40,7 @@ namespace cryptogram.Views
     }
     async void OnItemTapped(object sender, ItemTappedEventArgs args)
     {
-      var item = args.Item as Core.Messaging.Contact;
+      var item = args.Item as CryptogramLibrary.Messaging.Contact;
       if (LastItemSelected == item)
         await Navigation.PushAsync(new ChatRoom(new ItemDetailViewModel(Clone2Contect(item))));
       LastItemSelected = item;
@@ -53,7 +53,7 @@ namespace cryptogram.Views
 
     async void Edit_Clicked(object sender, EventArgs e)
     {
-      Core.Messaging.Contact item = (Core.Messaging.Contact)ItemsListView.SelectedItem;
+      CryptogramLibrary.Messaging.Contact item = (CryptogramLibrary.Messaging.Contact)ItemsListView.SelectedItem;
       if (item != null)
         await Navigation.PushAsync(new EditItemPage() { Contact = Clone2Contect(item) });
     }
@@ -67,12 +67,12 @@ namespace cryptogram.Views
       //  ItemsListView.ItemsSource = Core.Messaging.GetContacts();
       //});
       Find_Unfocused(null, null);
-      PopulateList(Core.Messaging.GetContacts());
+      PopulateList(CryptogramLibrary.Messaging.GetContacts());
     }
 
-    static Dictionary<Core.Messaging.Contact, Core.Messaging.Contact> List = new Dictionary<Core.Messaging.Contact, Core.Messaging.Contact>();
+    static Dictionary<CryptogramLibrary.Messaging.Contact, CryptogramLibrary.Messaging.Contact> List = new Dictionary<CryptogramLibrary.Messaging.Contact, CryptogramLibrary.Messaging.Contact>();
     //static public System.Collections.ObjectModel.ObservableCollection<Core.Messaging.Contact> List = new System.Collections.ObjectModel.ObservableCollection<Core.Messaging.Contact>();
-    public void PopulateList(Core.Messaging.Contact[] Contacts)
+    public void PopulateList(CryptogramLibrary.Messaging.Contact[] Contacts)
     {
       ItemsListView.SelectedItem = null;
 
@@ -88,7 +88,7 @@ namespace cryptogram.Views
       //return;
 
       ItemsListView.BeginRefresh();
-      var ToRemove = new List<Core.Messaging.Contact>();
+      var ToRemove = new List<CryptogramLibrary.Messaging.Contact>();
       foreach (var I in List)
       {
         if (!Contacts.Contains(I.Value))
@@ -99,7 +99,7 @@ namespace cryptogram.Views
       foreach (var X in Contacts)
       {
         if (!List.Values.Contains(X))
-          List.Add((Core.Messaging.Contact)X.Clone(), X);
+          List.Add((CryptogramLibrary.Messaging.Contact)X.Clone(), X);
       }
       ItemsListView.ItemsSource = null; // Se non lo annullo e lo reimposto non funziona su Android
 
@@ -109,7 +109,7 @@ namespace cryptogram.Views
       ItemsListView.EndRefresh();
     }
 
-    private Core.Messaging.Contact Clone2Contect(Core.Messaging.Contact CloneContact)
+    private CryptogramLibrary.Messaging.Contact Clone2Contect(CryptogramLibrary.Messaging.Contact CloneContact)
     {
       return List[CloneContact];
       //return List.ToArray().First(x => x.Value == CloneContact).Key;
@@ -121,7 +121,7 @@ namespace cryptogram.Views
       if (Watermark == null)
       {
         var txt = Find.Text.ToLower();
-        var Contacts = Core.Messaging.GetContacts();
+        var Contacts = CryptogramLibrary.Messaging.GetContacts();
         var Findes = Contacts.ToList().FindAll(X => X.Name.ToLower().Contains(txt));
         PopulateList(Findes.ToArray());
       }

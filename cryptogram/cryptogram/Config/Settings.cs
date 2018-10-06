@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace cryptogram.Core
+namespace cryptogram.Config
 {
   public static class Settings
   {

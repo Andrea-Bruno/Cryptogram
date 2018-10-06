@@ -15,11 +15,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Core\Cryptography.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Core\Functions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Core\Messaging.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Core\Settings.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Core\Storage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Config\Settings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Resources\Dictionary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\IDataStore.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\AboutViewModel.cs" />
