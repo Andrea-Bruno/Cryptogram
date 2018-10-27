@@ -26,7 +26,7 @@ namespace cryptogram
       var NetworkName = "ANDREA";
       EntryPoints.Add(Environment.MachineName, "http://www.bitboxlab.com");
 #endif
-      CryptogramLibrary.Functions.Initialize(null, EntryPoints, NetworkName);
+      CryptogramLibrary.Functions.Initialize(EntryPoints, NetworkName);
       //NetworkExtension.Network.Initialize();
 
     }
