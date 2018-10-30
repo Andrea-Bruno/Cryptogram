@@ -18,15 +18,15 @@ namespace cryptogram
       CryptogramLibrary.Functions.ShareText = ShareText;
       CryptogramLibrary.Messaging.ViewMessage = ViewMessage;
       MainPage = new MainPage();
-      var EntryPoints = new System.Collections.Generic.Dictionary<String, String>();
+      var entryPoints = new System.Collections.Generic.Dictionary<String, String>();
 #if DEBUG
-      var NetworkName = "testnet";
-      EntryPoints.Add(Environment.MachineName, "http://localhost:55007");
+      var networkName = "testnet";
+      entryPoints.Add(Environment.MachineName, "http://localhost:55007");
 #else
       var NetworkName = "ANDREA";
       EntryPoints.Add(Environment.MachineName, "http://www.bitboxlab.com");
 #endif
-      CryptogramLibrary.Functions.Initialize(EntryPoints, NetworkName);
+      CryptogramLibrary.Functions.Initialize(entryPoints, networkName);
       //NetworkExtension.Network.Initialize();
 
     }
@@ -48,29 +48,27 @@ namespace cryptogram
     }
 
     //=========================================================================================
-    public static void Alert(string Message)
+    public static void Alert(string message)
     {
 #if __ANDROID__
-      Xamarin.Forms.Device.OpenUri(new Uri("mailto:?to=&subject=Alert&body=" + Message));
+      Device.OpenUri(new Uri("mailto:?to=&subject=Alert&body=" + message));
 #else
       Xamarin.Forms.Device.BeginInvokeOnMainThread(delegate
       {
         Xamarin.Forms.Page currPage;
-        if (Xamarin.Forms.Application.Current.MainPage.Navigation.NavigationStack.Count > 0)
-        {
-          int index = Xamarin.Forms.Application.Current.MainPage.Navigation.NavigationStack.Count - 1;
-          currPage = Xamarin.Forms.Application.Current.MainPage.Navigation.NavigationStack[index];
-          currPage.DisplayAlert(CryptogramLibrary.Resources.Dictionary.Alert, Message, CryptogramLibrary.Resources.Dictionary.Ok);
-        }
+        if (Xamarin.Forms.Application.Current.MainPage.Navigation.NavigationStack.Count <= 0) return;
+        var index = Xamarin.Forms.Application.Current.MainPage.Navigation.NavigationStack.Count - 1;
+        currPage = Xamarin.Forms.Application.Current.MainPage.Navigation.NavigationStack[index];
+        currPage.DisplayAlert(CryptogramLibrary.Resources.Dictionary.Alert, message, CryptogramLibrary.Resources.Dictionary.Ok);
       });
 #endif
     }
 
-    public static bool ShareText(string Text)
+    public static bool ShareText(string text)
     {
       try
       {
-        Xamarin.Forms.Device.OpenUri(new Uri("mailto:?to=&subject=Cryptogram&body=" + System.Net.WebUtility.UrlEncode(Text)));
+        Device.OpenUri(new Uri("mailto:?to=&subject=Cryptogram&body=" + System.Net.WebUtility.UrlEncode(text)));
         return true;
       }
       catch (Exception)
@@ -79,42 +77,42 @@ namespace cryptogram
       }
     }
 
-    private static void ViewMessage(DateTime Timestamp,  DataType Type, Byte[] Data, bool IsMyMessage)
+    private static void ViewMessage(DateTime timestamp,  DataType type, Byte[] data, bool isMyMessage)
     {
-      Xamarin.Forms.Device.BeginInvokeOnMainThread(delegate
+      Device.BeginInvokeOnMainThread(delegate
       {
-        var MessageLocalTime = Timestamp.ToLocalTime();
-        var PaddingLeft = 5; var PaddingRight = 5;
-        Xamarin.Forms.Color Background;
-        if (IsMyMessage)
+        var messageLocalTime = timestamp.ToLocalTime();
+        var paddingLeft = 5; var paddingRight = 5;
+        Color background;
+        if (isMyMessage)
         {
-          PaddingLeft = 20;
-          Background = Config.Settings.Graphics.BackgroundMyMessage;
+          paddingLeft = 20;
+          background = Config.Settings.Graphics.BackgroundMyMessage;
         }
         else
         {
-          Background = Config.Settings.Graphics.BackgroundMessage;
-          PaddingRight = 20;
+          background = Config.Settings.Graphics.BackgroundMessage;
+          paddingRight = 20;
         }
-        var Frame = new Xamarin.Forms.Frame() { CornerRadius = 10, BackgroundColor = Background, Padding = 0 };
-        var Box = new Xamarin.Forms.StackLayout() { Padding = new Xamarin.Forms.Thickness(PaddingLeft, 5, PaddingRight, 5) };
-        Frame.Content = Box;
-        var Container = Views.ChatRoom.Messages;
-        Container.Children.Insert(0, Frame);
-        var TimeLabel = new Xamarin.Forms.Label();
-        TimeSpan Difference = DateTime.Now - MessageLocalTime;
-        if (Difference.TotalDays < 1)
-          TimeLabel.Text = MessageLocalTime.ToLongTimeString();
+        var frame = new Frame() { CornerRadius = 10, BackgroundColor = background, Padding = 0 };
+        var box = new StackLayout() { Padding = new Thickness(paddingLeft, 5, paddingRight, 5) };
+        frame.Content = box;
+        var container = ChatRoom.Messages;
+        container.Children.Insert(0, frame);
+        var timeLabel = new Label();
+        var difference = DateTime.Now - messageLocalTime;
+        if (difference.TotalDays < 1)
+          timeLabel.Text = messageLocalTime.ToLongTimeString();
         else
-          TimeLabel.Text = MessageLocalTime.ToLongDateString() + " - " + MessageLocalTime.ToLongTimeString();
-        TimeLabel.FontSize = 8;
-        Box.Children.Add(TimeLabel);
-        switch (Type)
+          timeLabel.Text = messageLocalTime.ToLongDateString() + " - " + messageLocalTime.ToLongTimeString();
+        timeLabel.FontSize = 8;
+        box.Children.Add(timeLabel);
+        switch (type)
         {
           case DataType.Text:
-            var Label = new Xamarin.Forms.Label();
-            Label.Text = Encoding.Unicode.GetString(Data);
-            Box.Children.Add(Label);
+            var label = new Label();
+            label.Text = Encoding.Unicode.GetString(data);
+            box.Children.Add(label);
             break;
           case DataType.Image:
             break;

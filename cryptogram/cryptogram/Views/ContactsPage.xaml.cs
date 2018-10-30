@@ -8,9 +8,9 @@ using Xamarin.Forms.Xaml;
 namespace cryptogram.Views
 {
   [XamlCompilation(XamlCompilationOptions.Compile)]
-  public partial class ContactsPage : ContentPage
+  public partial class ContactsPage
   {
-    static public ContactsPage Istance;
+    public static ContactsPage Istance;
     public ContactsPage()
     {
       InitializeComponent();
@@ -23,8 +23,9 @@ namespace cryptogram.Views
 
     }
 
-    private CryptogramLibrary.Messaging.Contact LastItemSelected;
-    async void OnItemSelected(object sender, SelectedItemChangedEventArgs args)
+    private CryptogramLibrary.Messaging.Contact _lastItemSelected;
+
+    private async void OnItemSelected(object sender, SelectedItemChangedEventArgs args)
     {
       //var item = args.SelectedItem as Item;
       //if (item == null)
@@ -38,22 +39,23 @@ namespace cryptogram.Views
       // Manually deselect item.
       //ItemsListView.SelectedItem = null;
     }
-    async void OnItemTapped(object sender, ItemTappedEventArgs args)
+
+    private async void OnItemTapped(object sender, ItemTappedEventArgs args)
     {
       var item = args.Item as CryptogramLibrary.Messaging.Contact;
-      if (LastItemSelected == item)
+      if (_lastItemSelected == item)
         await Navigation.PushAsync(new ChatRoom(new ItemDetailViewModel(Clone2Contect(item))));
-      LastItemSelected = item;
+      _lastItemSelected = item;
     }
 
-    async void AddItem_Clicked(object sender, EventArgs e)
+    private async void AddItem_Clicked(object sender, EventArgs e)
     {
       await Navigation.PushAsync(new EditItemPage());
     }
 
-    async void Edit_Clicked(object sender, EventArgs e)
+    private async void Edit_Clicked(object sender, EventArgs e)
     {
-      CryptogramLibrary.Messaging.Contact item = (CryptogramLibrary.Messaging.Contact)ItemsListView.SelectedItem;
+      var item = (CryptogramLibrary.Messaging.Contact)ItemsListView.SelectedItem;
       if (item != null)
         await Navigation.PushAsync(new EditItemPage() { Contact = Clone2Contect(item) });
     }
@@ -61,7 +63,7 @@ namespace cryptogram.Views
     protected override void OnAppearing()
     {
       base.OnAppearing();
-      LastItemSelected = null;
+      _lastItemSelected = null;
       //Device.BeginInvokeOnMainThread(delegate
       //{
       //  ItemsListView.ItemsSource = Core.Messaging.GetContacts();
@@ -70,9 +72,9 @@ namespace cryptogram.Views
       PopulateList(CryptogramLibrary.Messaging.GetContacts());
     }
 
-    static Dictionary<CryptogramLibrary.Messaging.Contact, CryptogramLibrary.Messaging.Contact> List = new Dictionary<CryptogramLibrary.Messaging.Contact, CryptogramLibrary.Messaging.Contact>();
+    private static readonly Dictionary<CryptogramLibrary.Messaging.Contact, CryptogramLibrary.Messaging.Contact> List = new Dictionary<CryptogramLibrary.Messaging.Contact, CryptogramLibrary.Messaging.Contact>();
     //static public System.Collections.ObjectModel.ObservableCollection<Core.Messaging.Contact> List = new System.Collections.ObjectModel.ObservableCollection<Core.Messaging.Contact>();
-    public void PopulateList(CryptogramLibrary.Messaging.Contact[] Contacts)
+    public void PopulateList(CryptogramLibrary.Messaging.Contact[] contacts)
     {
       ItemsListView.SelectedItem = null;
 
@@ -88,63 +90,56 @@ namespace cryptogram.Views
       //return;
 
       ItemsListView.BeginRefresh();
-      var ToRemove = new List<CryptogramLibrary.Messaging.Contact>();
+      var toRemove = new List<CryptogramLibrary.Messaging.Contact>();
       foreach (var I in List)
       {
-        if (!Contacts.Contains(I.Value))
-          ToRemove.Add(I.Key);
+        if (!contacts.Contains(I.Value))
+          toRemove.Add(I.Key);
       }
-      ToRemove.ForEach(X => { List.Remove(X); });
+      toRemove.ForEach(x => { List.Remove(x); });
 
-      foreach (var X in Contacts)
+      foreach (var x in contacts)
       {
-        if (!List.Values.Contains(X))
-          List.Add((CryptogramLibrary.Messaging.Contact)X.Clone(), X);
+        if (!List.Values.Contains(x))
+          List.Add((CryptogramLibrary.Messaging.Contact)x.Clone(), x);
       }
       ItemsListView.ItemsSource = null; // Se non lo annullo e lo reimposto non funziona su Android
 
-      var Values = List.Keys;
-      var Sorted = Values.OrderBy(o => o.Name).ToList();
-      ItemsListView.ItemsSource = Sorted;
+      var values = List.Keys;
+      var sorted = values.OrderBy(o => o.Name).ToList();
+      ItemsListView.ItemsSource = sorted;
       ItemsListView.EndRefresh();
     }
 
-    private CryptogramLibrary.Messaging.Contact Clone2Contect(CryptogramLibrary.Messaging.Contact CloneContact)
+    private CryptogramLibrary.Messaging.Contact Clone2Contect(CryptogramLibrary.Messaging.Contact cloneContact)
     {
-      return List[CloneContact];
+      return List[cloneContact];
       //return List.ToArray().First(x => x.Value == CloneContact).Key;
     }
 
-    private Color? Watermark;
+    private Color? _watermark;
     private void Find_TextChanged(object sender, TextChangedEventArgs e)
     {
-      if (Watermark == null)
-      {
-        var txt = Find.Text.ToLower();
-        var Contacts = CryptogramLibrary.Messaging.GetContacts();
-        var Findes = Contacts.ToList().FindAll(X => X.Name.ToLower().Contains(txt));
-        PopulateList(Findes.ToArray());
-      }
+      if (_watermark != null) return;
+      var txt = Find.Text.ToLower();
+      var contacts = CryptogramLibrary.Messaging.GetContacts();
+      PopulateList(contacts.ToList().FindAll(x => x.Name.ToLower().Contains(txt)).ToArray());
     }
 
     private void Find_Focused(object sender, FocusEventArgs e)
     {
-      if (Watermark != null)
-      {
-        Find.TextColor = (Color)Watermark;
-        Find.Text = "";
-        Watermark = null;
-      }
+      if (_watermark == null) return;
+      Find.TextColor = (Color)_watermark;
+      Find.Text = "";
+      _watermark = null;
     }
 
     private void Find_Unfocused(object sender, FocusEventArgs e)
     {
-      if (string.IsNullOrEmpty(Find.Text))
-      {
-        Watermark = Find.TextColor;
-        Find.TextColor = Color.FromRgba(128, 128, 128, 128);
-        Find.Text = cryptogram.Resources.Dictionary.Search;
-      }
+      if (!string.IsNullOrEmpty(Find.Text)) return;
+      _watermark = Find.TextColor;
+      Find.TextColor = Color.FromRgba(128, 128, 128, 128);
+      Find.Text = cryptogram.Resources.Dictionary.Search;
     }
   }
 }

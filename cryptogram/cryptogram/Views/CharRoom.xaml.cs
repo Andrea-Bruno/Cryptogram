@@ -9,13 +9,13 @@ namespace cryptogram.Views
   [XamlCompilation(XamlCompilationOptions.Compile)]
   public partial class ChatRoom : ContentPage
   {
-    ItemDetailViewModel viewModel;
+    private readonly ItemDetailViewModel _viewModel;
 
     public ChatRoom(ItemDetailViewModel viewModel)
     {
       InitializeComponent();
       Messages = MessageList;
-      BindingContext = this.viewModel = viewModel;
+      BindingContext = _viewModel = viewModel;
       TextMessage.Focus();
     
       Device.BeginInvokeOnMainThread(delegate
@@ -38,8 +38,8 @@ namespace cryptogram.Views
         Name = "",
         PublicKey = ""
       };
-      viewModel = new ItemDetailViewModel(item);
-      BindingContext = viewModel;
+      _viewModel = new ItemDetailViewModel(item);
+      BindingContext = _viewModel;
     }
 
     private void Send_Clicked(object sender, EventArgs e)
@@ -48,46 +48,43 @@ namespace cryptogram.Views
       TextMessage.Text = "";
     }
 
-    async void Remove_Clicked(object sender, EventArgs e)
+    private async void Remove_Clicked(object sender, EventArgs e)
     {
-      var Item = viewModel.Item;
-      CryptogramLibrary.Messaging.RemoveContact(Item);
+      var item = _viewModel.Item;
+      CryptogramLibrary.Messaging.RemoveContact(item);
       await Navigation.PopAsync();
     }
 
     private void ContentPage_Disappearing(object sender, EventArgs e)
     {
-      var Item = viewModel.Item;
-      if (Item.Name != _NameContact)
-        Item.Save();
+      var item = _viewModel.Item;
+      if (item.Name != _nameContact)
+        item.Save();
     }
 
-    private string _NameContact;
+    private string _nameContact;
     private void ContentPage_Appearing(object sender, EventArgs e)
     {
       TextMessage_Unfocused(null, null);
-      var Item = viewModel.Item;
-      _NameContact = Item.Name;
+      var item = _viewModel.Item;
+      _nameContact = item.Name;
     }
 
-    private Color? Watermark;
+    private Color? _watermark;
     private void TextMessage_Focused(object sender, FocusEventArgs e)
     {
-      if (Watermark != null)
-      {
-        TextMessage.TextColor = (Color)Watermark;
-        TextMessage.IsSpellCheckEnabled = true;
-        TextMessage.Text = "";
-        Watermark = null;
-      }
-
+      if (_watermark == null) return;
+      TextMessage.TextColor = (Color)_watermark;
+      TextMessage.IsSpellCheckEnabled = true;
+      TextMessage.Text = "";
+      _watermark = null;
     }
 
     private void TextMessage_Unfocused(object sender, FocusEventArgs e)
     {
       if (string.IsNullOrEmpty(TextMessage.Text))
       {
-        Watermark = TextMessage.TextColor;
+        _watermark = TextMessage.TextColor;
         TextMessage.TextColor = Color.FromRgba(128, 128, 128, 128);
         TextMessage.IsSpellCheckEnabled = false;
         TextMessage.Text = cryptogram.Resources.Dictionary.strictlyConfidentialMessage + ": «We are anonymous!»";

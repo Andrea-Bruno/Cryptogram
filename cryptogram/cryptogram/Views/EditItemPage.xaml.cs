@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-
-using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 namespace cryptogram.Views
 {
   [XamlCompilation(XamlCompilationOptions.Compile)]
-  public partial class EditItemPage : ContentPage
+  public partial class EditItemPage
   {
-    private Boolean Edit = false;
-    private Core.Messaging.Contact _Contact;
-    public Core.Messaging.Contact Contact
+    private bool _edit;
+    private CryptogramLibrary.Messaging.Contact _contact;
+    public CryptogramLibrary.Messaging.Contact Contact
     {
-      get { return _Contact; }
+      get => _contact;
       set
       {
         if (value == null)
@@ -25,53 +22,51 @@ namespace cryptogram.Views
           Name.Text = value.Name;
           PublicKey.Text = value.PublicKey;
         }
-        _Contact = value;
-        Edit = true;
+        _contact = value;
+        _edit = true;
       }
     }
 
     public EditItemPage()
     {
       InitializeComponent();
-      _Contact = new Core.Messaging.Contact();
+      _contact = new CryptogramLibrary.Messaging.Contact();
       BindingContext = this;
     }
-    async void Disappearing(object sender, EventArgs e)
+
+    private new void Disappearing(object sender, EventArgs e)
     {
       //Save the contact
-      if (Contact != null)
+      if (Contact == null) return;
+      if (_edit)
       {
-        if (Edit)
-        {
-          if (Contact.Name != Name.Text)
-            Contact.Name = Name.Text;
-          if (Contact.PublicKey != PublicKey.Text)
-            Contact.PublicKey = PublicKey.Text;
-          {
-            Contact.Save();
-            //ContactsPage.Istance.Update();
-          }
-        }
-        else
-        {
+        if (Contact.Name != Name.Text)
           Contact.Name = Name.Text;
+        if (Contact.PublicKey != PublicKey.Text)
           Contact.PublicKey = PublicKey.Text;
-          Core.Messaging.AddContact(Contact);
+        {
+          Contact.Save();
+          //ContactsPage.Istance.Update();
         }
-
+      }
+      else
+      {
+        Contact.Name = Name.Text;
+        Contact.PublicKey = PublicKey.Text;
+        CryptogramLibrary.Messaging.AddContact(Contact);
       }
     }
 
-    async private void Remove_Clicked(object sender, EventArgs e)
+    private async void Remove_Clicked(object sender, EventArgs e)
     {
-      Core.Messaging.RemoveContact(Contact);
+      CryptogramLibrary.Messaging.RemoveContact(Contact);
       Contact = null;
       await Navigation.PopAsync();//Exit
     }
 
     private void Share_Clicked(object sender, EventArgs e)
     {
-      Core.Functions.ShareText(PublicKey.Text);
+      CryptogramLibrary.Functions.ShareText(PublicKey.Text);
     }
   }
 }

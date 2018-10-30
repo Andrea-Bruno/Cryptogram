@@ -19,7 +19,7 @@ namespace cryptogram.UWP
     {
         public MainPage()
         {
-            this.InitializeComponent();
+            InitializeComponent();
 
             LoadApplication(new cryptogram.App());
         }
