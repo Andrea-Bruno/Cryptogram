@@ -25,22 +25,22 @@ namespace cryptogram.Views
 
     private CryptogramLibrary.Messaging.Contact _lastItemSelected;
 
-    private async void OnItemSelected(object sender, SelectedItemChangedEventArgs args)
-    {
-      //var item = args.SelectedItem as Item;
-      //if (item == null)
-      //  return;
+		private async void OnItemSelected(object sender, SelectedItemChangedEventArgs args)
+		{
+			//var item = args.SelectedItem as Item;
+			//if (item == null)
+			//	return;
 
-      //if (LastItemSelected == item)
-      //  await Navigation.PushAsync(new ChatRoom(new ItemDetailViewModel(item)));
-      //else
-      //  LastItemSelected = item;
+			//if (LastItemSelected == item)
+			//	await Navigation.PushAsync(new ChatRoom(new ItemDetailViewModel(item)));
+			//else
+			//	LastItemSelected = item;
 
-      // Manually deselect item.
-      //ItemsListView.SelectedItem = null;
-    }
+			//Manually deselect item.
+		 //ItemsListView.SelectedItem = null;
+		}
 
-    private async void OnItemTapped(object sender, ItemTappedEventArgs args)
+		private async void OnItemTapped(object sender, ItemTappedEventArgs args)
     {
       var item = args.Item as CryptogramLibrary.Messaging.Contact;
       if (_lastItemSelected == item)

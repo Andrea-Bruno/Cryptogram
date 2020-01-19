@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
+# Blend for Visual Studio 15
 VisualStudioVersion = 15.0.27703.2035
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cryptogram.Android", "cryptogram\cryptogram.Android\cryptogram.Android.csproj", "{8A1DFD60-B7FC-456C-92B0-92A75DEC160E}"
@@ -9,13 +9,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cryptogram.UWP", "cryptogra
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "cryptogram", "cryptogram\cryptogram\cryptogram.shproj", "{4A429AEB-0367-467C-97EB-C2BB0075A900}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlockchainManager", "..\BlockchainManager\BlockchainManager\BlockchainManager.csproj", "{E9529744-996C-4E78-AF2C-B12C6664D279}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlockchainManager", "..\BlockchainManager\BlockchainManager\BlockchainManager.csproj", "{E9529744-996C-4E78-AF2C-B12C6664D279}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CryptogramLibrary", "..\CryptogramLibrary\CryptogramLibrary\CryptogramLibrary.csproj", "{1E0B6BD3-4F04-4019-86C2-8264291F152F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptogramLibrary", "..\CryptogramLibrary\CryptogramLibrary\CryptogramLibrary.csproj", "{1E0B6BD3-4F04-4019-86C2-8264291F152F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cryptogram.iOS", "cryptogram\cryptogram.iOS\cryptogram.iOS.csproj", "{795FE44C-AF98-4EFA-92BB-0FF2808870BD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetworkManager", "..\Network\Network\NetworkManager.csproj", "{ABC8AFBC-D4CE-478C-A5B1-740E4BE4D317}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkManager", "..\Network\Network\NetworkManager.csproj", "{ABC8AFBC-D4CE-478C-A5B1-740E4BE4D317}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -165,18 +165,18 @@ Global
 		{E9529744-996C-4E78-AF2C-B12C6664D279}.Debug|x64.Build.0 = Debug|Any CPU
 		{E9529744-996C-4E78-AF2C-B12C6664D279}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{E9529744-996C-4E78-AF2C-B12C6664D279}.Debug|x86.Build.0 = Debug|Any CPU
-		{E9529744-996C-4E78-AF2C-B12C6664D279}.DebugNetwork|Any CPU.ActiveCfg = DebugNetwork|Any CPU
-		{E9529744-996C-4E78-AF2C-B12C6664D279}.DebugNetwork|Any CPU.Build.0 = DebugNetwork|Any CPU
-		{E9529744-996C-4E78-AF2C-B12C6664D279}.DebugNetwork|ARM.ActiveCfg = DebugNetwork|Any CPU
-		{E9529744-996C-4E78-AF2C-B12C6664D279}.DebugNetwork|ARM.Build.0 = DebugNetwork|Any CPU
-		{E9529744-996C-4E78-AF2C-B12C6664D279}.DebugNetwork|iPhone.ActiveCfg = DebugNetwork|Any CPU
-		{E9529744-996C-4E78-AF2C-B12C6664D279}.DebugNetwork|iPhone.Build.0 = DebugNetwork|Any CPU
-		{E9529744-996C-4E78-AF2C-B12C6664D279}.DebugNetwork|iPhoneSimulator.ActiveCfg = DebugNetwork|Any CPU
-		{E9529744-996C-4E78-AF2C-B12C6664D279}.DebugNetwork|iPhoneSimulator.Build.0 = DebugNetwork|Any CPU
-		{E9529744-996C-4E78-AF2C-B12C6664D279}.DebugNetwork|x64.ActiveCfg = DebugNetwork|Any CPU
-		{E9529744-996C-4E78-AF2C-B12C6664D279}.DebugNetwork|x64.Build.0 = DebugNetwork|Any CPU
-		{E9529744-996C-4E78-AF2C-B12C6664D279}.DebugNetwork|x86.ActiveCfg = DebugNetwork|Any CPU
-		{E9529744-996C-4E78-AF2C-B12C6664D279}.DebugNetwork|x86.Build.0 = DebugNetwork|Any CPU
+		{E9529744-996C-4E78-AF2C-B12C6664D279}.DebugNetwork|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9529744-996C-4E78-AF2C-B12C6664D279}.DebugNetwork|Any CPU.Build.0 = Debug|Any CPU
+		{E9529744-996C-4E78-AF2C-B12C6664D279}.DebugNetwork|ARM.ActiveCfg = Debug|Any CPU
+		{E9529744-996C-4E78-AF2C-B12C6664D279}.DebugNetwork|ARM.Build.0 = Debug|Any CPU
+		{E9529744-996C-4E78-AF2C-B12C6664D279}.DebugNetwork|iPhone.ActiveCfg = Debug|Any CPU
+		{E9529744-996C-4E78-AF2C-B12C6664D279}.DebugNetwork|iPhone.Build.0 = Debug|Any CPU
+		{E9529744-996C-4E78-AF2C-B12C6664D279}.DebugNetwork|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{E9529744-996C-4E78-AF2C-B12C6664D279}.DebugNetwork|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{E9529744-996C-4E78-AF2C-B12C6664D279}.DebugNetwork|x64.ActiveCfg = Debug|Any CPU
+		{E9529744-996C-4E78-AF2C-B12C6664D279}.DebugNetwork|x64.Build.0 = Debug|Any CPU
+		{E9529744-996C-4E78-AF2C-B12C6664D279}.DebugNetwork|x86.ActiveCfg = Debug|Any CPU
+		{E9529744-996C-4E78-AF2C-B12C6664D279}.DebugNetwork|x86.Build.0 = Debug|Any CPU
 		{E9529744-996C-4E78-AF2C-B12C6664D279}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E9529744-996C-4E78-AF2C-B12C6664D279}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E9529744-996C-4E78-AF2C-B12C6664D279}.Release|ARM.ActiveCfg = Release|Any CPU
@@ -265,18 +265,18 @@ Global
 		{ABC8AFBC-D4CE-478C-A5B1-740E4BE4D317}.Debug|x64.Build.0 = Debug|Any CPU
 		{ABC8AFBC-D4CE-478C-A5B1-740E4BE4D317}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{ABC8AFBC-D4CE-478C-A5B1-740E4BE4D317}.Debug|x86.Build.0 = Debug|Any CPU
-		{ABC8AFBC-D4CE-478C-A5B1-740E4BE4D317}.DebugNetwork|Any CPU.ActiveCfg = DebugNetwork|Any CPU
-		{ABC8AFBC-D4CE-478C-A5B1-740E4BE4D317}.DebugNetwork|Any CPU.Build.0 = DebugNetwork|Any CPU
-		{ABC8AFBC-D4CE-478C-A5B1-740E4BE4D317}.DebugNetwork|ARM.ActiveCfg = DebugNetwork|Any CPU
-		{ABC8AFBC-D4CE-478C-A5B1-740E4BE4D317}.DebugNetwork|ARM.Build.0 = DebugNetwork|Any CPU
-		{ABC8AFBC-D4CE-478C-A5B1-740E4BE4D317}.DebugNetwork|iPhone.ActiveCfg = DebugNetwork|Any CPU
-		{ABC8AFBC-D4CE-478C-A5B1-740E4BE4D317}.DebugNetwork|iPhone.Build.0 = DebugNetwork|Any CPU
-		{ABC8AFBC-D4CE-478C-A5B1-740E4BE4D317}.DebugNetwork|iPhoneSimulator.ActiveCfg = DebugNetwork|Any CPU
-		{ABC8AFBC-D4CE-478C-A5B1-740E4BE4D317}.DebugNetwork|iPhoneSimulator.Build.0 = DebugNetwork|Any CPU
-		{ABC8AFBC-D4CE-478C-A5B1-740E4BE4D317}.DebugNetwork|x64.ActiveCfg = DebugNetwork|Any CPU
-		{ABC8AFBC-D4CE-478C-A5B1-740E4BE4D317}.DebugNetwork|x64.Build.0 = DebugNetwork|Any CPU
-		{ABC8AFBC-D4CE-478C-A5B1-740E4BE4D317}.DebugNetwork|x86.ActiveCfg = DebugNetwork|Any CPU
-		{ABC8AFBC-D4CE-478C-A5B1-740E4BE4D317}.DebugNetwork|x86.Build.0 = DebugNetwork|Any CPU
+		{ABC8AFBC-D4CE-478C-A5B1-740E4BE4D317}.DebugNetwork|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABC8AFBC-D4CE-478C-A5B1-740E4BE4D317}.DebugNetwork|Any CPU.Build.0 = Debug|Any CPU
+		{ABC8AFBC-D4CE-478C-A5B1-740E4BE4D317}.DebugNetwork|ARM.ActiveCfg = Debug|Any CPU
+		{ABC8AFBC-D4CE-478C-A5B1-740E4BE4D317}.DebugNetwork|ARM.Build.0 = Debug|Any CPU
+		{ABC8AFBC-D4CE-478C-A5B1-740E4BE4D317}.DebugNetwork|iPhone.ActiveCfg = Debug|Any CPU
+		{ABC8AFBC-D4CE-478C-A5B1-740E4BE4D317}.DebugNetwork|iPhone.Build.0 = Debug|Any CPU
+		{ABC8AFBC-D4CE-478C-A5B1-740E4BE4D317}.DebugNetwork|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{ABC8AFBC-D4CE-478C-A5B1-740E4BE4D317}.DebugNetwork|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{ABC8AFBC-D4CE-478C-A5B1-740E4BE4D317}.DebugNetwork|x64.ActiveCfg = Debug|Any CPU
+		{ABC8AFBC-D4CE-478C-A5B1-740E4BE4D317}.DebugNetwork|x64.Build.0 = Debug|Any CPU
+		{ABC8AFBC-D4CE-478C-A5B1-740E4BE4D317}.DebugNetwork|x86.ActiveCfg = Debug|Any CPU
+		{ABC8AFBC-D4CE-478C-A5B1-740E4BE4D317}.DebugNetwork|x86.Build.0 = Debug|Any CPU
 		{ABC8AFBC-D4CE-478C-A5B1-740E4BE4D317}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ABC8AFBC-D4CE-478C-A5B1-740E4BE4D317}.Release|Any CPU.Build.0 = Release|Any CPU
 		{ABC8AFBC-D4CE-478C-A5B1-740E4BE4D317}.Release|ARM.ActiveCfg = Release|Any CPU
